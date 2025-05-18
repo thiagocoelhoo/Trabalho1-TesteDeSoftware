@@ -21,7 +21,8 @@ public class Jumper {
 
     public void jump() {
         Random r = new Random();
-        velX = (r.nextInt(0, 2) * 2.0f - 1) * (coins / 1_000_000) * 5;
+        float s = (r.nextInt(0, 2) * 2.0f - 1);
+        velX = s * (coins / 1_000_000.0) * 5;
         velY = -2.0f;
     }
 
@@ -43,6 +44,7 @@ public class Jumper {
         }
 
         // Calcular colisão com bordas da tela
+        /*
         if (x + 20 >= 600) {
             x = 600 - 20;
             velX = -velX;
@@ -50,6 +52,7 @@ public class Jumper {
             x = 0;
             velX = -velX;
         }
+        */
     }
 
     public double getX() {

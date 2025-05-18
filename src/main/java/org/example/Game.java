@@ -9,13 +9,15 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 public class Game extends JPanel implements ActionListener, KeyListener {
-    private final int DELAY = 0;
+    private final int DELAY = 8;
 
     private final int quantidade = 50;
     private ArrayList<Jumper> jumpers;
 
     private Timer timer;
     private int currentJumperIndex = 0;
+    private double minX = 0;
+    private double maxX = 600;
 
     public Game() {
         setPreferredSize(new Dimension(600, 600));
@@ -88,6 +90,21 @@ public class Game extends JPanel implements ActionListener, KeyListener {
             jumper.update();
         }
 
+        // Calcular área renderizada
+        minX = 0;
+        maxX = 0;
+
+        for (Jumper jumper : jumpers) {
+            double x = jumper.getX();
+            if (x < minX) {
+                minX = x;
+            }
+
+            if (x > maxX) {
+                maxX = x;
+            }
+        }
+
         repaint();
     }
 
@@ -107,7 +124,11 @@ public class Game extends JPanel implements ActionListener, KeyListener {
 
             Color color = new Color(255 - intensity, intensity, 0);
             g.setColor(color);
-            g.drawOval((int)jumper.getX(), (int)jumper.getY() - 20, 20, 20);
+
+            double x = jumper.getX();
+            x = (x - minX) / (maxX - minX) * 600;
+
+            g.drawOval((int)x - 10, (int)jumper.getY() - 20, 20, 20);
         }
 
         // Sync screen
