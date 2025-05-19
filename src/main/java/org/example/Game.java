@@ -6,104 +6,80 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
+
+import java.util.LinkedList;
 
 public class Game extends JPanel implements ActionListener, KeyListener {
-    private final int DELAY = 8;
+    private final int DELAY = 0;
+    private final int MAX_ITERATIONS = 100_000;
 
-    private final int quantidade = 50;
-    private ArrayList<Jumper> jumpers;
+    private int currentIteration = 0;
+    private final int quantidade = 100;
+    private LinkedList<Jumper> jumpers;
+    private int currentJumperIndex;
 
     private Timer timer;
-    private int currentJumperIndex = 0;
-    private double minX = 0;
-    private double maxX = 600;
 
     public Game() {
         setPreferredSize(new Dimension(600, 600));
         setBackground(Color.BLACK);
-        jumpers = new ArrayList<Jumper>();
+        jumpers = new LinkedList<Jumper>();
 
         for (int i = 0; i < quantidade; i++) {
-            jumpers.add(new Jumper(600.0f / quantidade * i , 50));
+            jumpers.add(new Jumper(600.0f / quantidade * i , 300));
         }
+        currentJumperIndex = 0;
 
         timer = new Timer(DELAY, this);
         timer.setActionCommand("update");
         timer.start();
     }
 
-    private Integer findNearestJumper(int jumperIndex) {
-        Jumper currentJumper = jumpers.get(jumperIndex);
-
-        Integer nearestJumperIndex = null;
+    private Jumper findNearestJumper(Jumper jumper) {
         Double minDistance = null;
+        Jumper nearestJumper = null;
 
-        for (int i = 0; i < jumpers.size(); i++) {
-            if (i == jumperIndex) {
-                continue;
-            }
+        for (Jumper j : jumpers) {
+            if (j != jumper) {
+                double distance = Math.abs(j.getX() - jumper.getX());
 
-            Jumper jumper = jumpers.get(i);
-            double distance = Math.abs(jumper.getX() - currentJumper.getX());
-
-            if (minDistance == null || distance < minDistance) {
-                minDistance = distance;
-                nearestJumperIndex = i;
+                if (minDistance == null || distance < minDistance) {
+                    minDistance = distance;
+                    nearestJumper = j;
+                }
             }
         }
 
-        return nearestJumperIndex;
+        return nearestJumper;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String action = e.getActionCommand();
-        // System.out.println(action);
-
-        if (action != null && action.equals("start")) {
-            if (timer.isRunning()) {
-                timer.stop();
-            } else {
-                timer.start();
-            }
+        if (currentIteration >= MAX_ITERATIONS) {
+            timer.stop();
+            return;
         }
 
         Jumper currentJumper = jumpers.get(currentJumperIndex);
+        currentJumper.jump();
 
-        if (!currentJumper.isJumping()) {
-            Integer nearestJumperIndex = findNearestJumper(currentJumperIndex);
-            Jumper nearestJumper = jumpers.get(nearestJumperIndex);
-            currentJumper.steal(nearestJumper);
+        Jumper nearestJumper = findNearestJumper(currentJumper);
+        int nearestJumperIndex = jumpers.indexOf(nearestJumper);
 
-            if (nearestJumper.getCoins() == 0) {
-                jumpers.remove(nearestJumper);
-                System.out.println("Dead: " + nearestJumperIndex + " Coins: " + nearestJumper.getCoins());
-            }
+        currentJumper.steal(nearestJumper);
 
+        if (nearestJumper.getCoins() == 0) {
+            jumpers.remove(nearestJumper);
+        }
+
+        if (nearestJumper.getCoins() > 0 || nearestJumperIndex > currentJumperIndex) {
             currentJumperIndex++;
-            currentJumperIndex %= jumpers.size();
-            jumpers.get(currentJumperIndex).jump();
         }
 
-        for (Jumper jumper : jumpers) {
-            jumper.update();
-        }
+        currentJumperIndex %= jumpers.size();
 
-        // Calcular área renderizada
-        minX = 0;
-        maxX = 0;
-
-        for (Jumper jumper : jumpers) {
-            double x = jumper.getX();
-            if (x < minX) {
-                minX = x;
-            }
-
-            if (x > maxX) {
-                maxX = x;
-            }
-        }
+        System.out.println("Iteration: " + currentIteration);
+        currentIteration++;
 
         repaint();
     }
@@ -116,8 +92,22 @@ public class Game extends JPanel implements ActionListener, KeyListener {
         g.setColor(Color.WHITE);
         g.drawLine(0, getHeight()/2, getWidth(), getHeight()/2);
 
-        // Draw jumper
+        // Calcular área renderizada
+        double minX = 0;
+        double maxX = 0;
 
+        for (Jumper jumper : jumpers) {
+            double x = jumper.getX();
+            if (x < minX) {
+                minX = x;
+            }
+
+            if (x > maxX) {
+                maxX = x;
+            }
+        }
+
+        // Draw jumper
         for (Jumper jumper : jumpers) {
             int intensity = (int)Math.min(Math.log(jumper.getCoins()) / Math.log(1_000_000.0f) * 255, 255);
             intensity = Math.max(intensity, 0);
@@ -126,7 +116,7 @@ public class Game extends JPanel implements ActionListener, KeyListener {
             g.setColor(color);
 
             double x = jumper.getX();
-            x = (x - minX) / (maxX - minX) * 600;
+            x = (x - minX) / (maxX - minX) * 550 + 25;
 
             g.drawOval((int)x - 10, (int)jumper.getY() - 20, 20, 20);
         }
@@ -137,18 +127,13 @@ public class Game extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        for (Jumper jumper : jumpers) {
-            jumper.jump();
-        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-
     }
 }
