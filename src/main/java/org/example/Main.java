@@ -9,6 +9,7 @@ public class Main {
 
         // Create and add the panel to the window
         Game game = new Game();
+        game.start();
         window.add(game);
         window.addKeyListener(game);
 

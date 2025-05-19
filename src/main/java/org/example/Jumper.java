@@ -3,6 +3,7 @@ package org.example;
 import java.util.Random;
 
 public class Jumper {
+    public final int INITIAL_COIN_AMOUNT = 1_000_000;
     private final Random randomGenerator = new Random();
     private final int FLOOR_HEIGHT = 300;
 
@@ -14,7 +15,7 @@ public class Jumper {
     public Jumper(double x, double y) {
         this.x = x;
         this.y = y;
-        this.coins = 1_000_000;
+        this.coins = INITIAL_COIN_AMOUNT;
     }
 
     public double getX() {
@@ -43,8 +44,9 @@ public class Jumper {
     }
 
     public void steal(Jumper other) {
-        this.coins += (int)Math.ceil(other.getCoins() / 2.0f);
-        other.setCoins((int)Math.floor(other.getCoins() / 2.0f));
+        int steal = (int)Math.ceil(other.getCoins() / 2.0f);
+        other.setCoins(other.getCoins() - steal);
+        this.coins += steal;
     }
 
     public void update() {

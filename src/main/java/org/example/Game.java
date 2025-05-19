@@ -7,32 +7,47 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class Game extends JPanel implements ActionListener, KeyListener {
     private final int DELAY = 0;
     private final int MAX_ITERATIONS = 100_000;
 
     private int currentIteration = 0;
-    private final int quantidade = 100;
-    private LinkedList<Jumper> jumpers;
+    private ArrayList<Jumper> jumpers;
     private int currentJumperIndex;
 
     private Timer timer;
 
     public Game() {
+        // Setup panel
         setPreferredSize(new Dimension(600, 600));
         setBackground(Color.BLACK);
-        jumpers = new LinkedList<Jumper>();
 
-        for (int i = 0; i < quantidade; i++) {
-            jumpers.add(new Jumper(600.0f / quantidade * i , 300));
-        }
-        currentJumperIndex = 0;
+        // Create jumpers list
+        createJumpers(100);
 
+        // Create timer
         timer = new Timer(DELAY, this);
         timer.setActionCommand("update");
+    }
+
+    public void start() {
         timer.start();
+    }
+    
+    public ArrayList<Jumper> getJumpers() {
+        return jumpers;
+    }
+
+    public void createJumpers(int amount) {
+        jumpers = new ArrayList<Jumper>(amount);
+
+        for (int i = 0; i < amount; i++) {
+            jumpers.add(i, new Jumper(600.0f / amount * i , 300));
+        }
+
+        currentJumperIndex = 0;
     }
 
     private Jumper findNearestJumper(Jumper jumper) {
