@@ -1,60 +1,44 @@
 package org.example;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.util.Iterator;
 
-import java.util.ArrayList;
-
-public class Game extends JPanel implements ActionListener, KeyListener {
-    private final int DELAY = 0;
-    private final int MAX_ITERATIONS = 100_000;
-
-    private int currentIteration = 0;
-    private ArrayList<Jumper> jumpers;
-    private int currentJumperIndex;
-
-    private Timer timer;
+public class Game {
+    private CircularLinkedList<Jumper> jumpers;
+    private Iterator<Jumper> jumperIterator;
+    private Jumper currentJumper = null;
 
     public Game() {
-        // Setup panel
-        setPreferredSize(new Dimension(600, 600));
-        setBackground(Color.BLACK);
-
-        // Create jumpers list
-        createJumpers(100);
-
-        // Create timer
-        timer = new Timer(DELAY, this);
-        timer.setActionCommand("update");
-    }
-
-    public void start() {
-        timer.start();
     }
     
-    public ArrayList<Jumper> getJumpers() {
+    public CircularLinkedList<Jumper> getJumpers() {
         return jumpers;
     }
 
     public void createJumpers(int amount) {
-        jumpers = new ArrayList<Jumper>(amount);
+        jumpers = new CircularLinkedList<Jumper>();
+        double LEFT = -100_000.0;
+        double RIGHT = 100_000.0;
 
-        for (int i = 0; i < amount; i++) {
-            jumpers.add(i, new Jumper(600.0f / amount * i , 300));
+        if (amount <= 0) {
+            throw new IllegalArgumentException();
         }
 
-        currentJumperIndex = 0;
+        for (int i = 0; i < amount; i++) {
+            double x = (RIGHT - LEFT) / amount * i;
+            System.out.println(x);
+            Jumper j = new Jumper(LEFT + x , 300);
+            jumpers.add(j);
+        }
+
+        jumperIterator = jumpers.iterator();
+        currentJumper = jumperIterator.next();
     }
 
     private Jumper findNearestJumper(Jumper jumper) {
         Double minDistance = null;
         Jumper nearestJumper = null;
 
-        for (Jumper j : jumpers) {
+        for (Jumper j : jumpers.toList()) {
             if (j != jumper) {
                 double distance = Math.abs(j.getX() - jumper.getX());
 
@@ -68,87 +52,21 @@ public class Game extends JPanel implements ActionListener, KeyListener {
         return nearestJumper;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (currentIteration >= MAX_ITERATIONS) {
-            timer.stop();
-            return;
-        }
+    public void update(double deltaTime) {
+        if (!currentJumper.isMoving()) {
+            currentJumper = jumperIterator.next();
+            currentJumper.jump();
 
-        Jumper currentJumper = jumpers.get(currentJumperIndex);
-        currentJumper.jump();
+            Jumper nearestJumper = findNearestJumper(currentJumper);
+            currentJumper.steal(nearestJumper);
 
-        Jumper nearestJumper = findNearestJumper(currentJumper);
-        int nearestJumperIndex = jumpers.indexOf(nearestJumper);
-
-        currentJumper.steal(nearestJumper);
-
-        if (nearestJumper.getCoins() == 0) {
-            jumpers.remove(nearestJumper);
-        }
-
-        if (nearestJumper.getCoins() > 0 || nearestJumperIndex > currentJumperIndex) {
-            currentJumperIndex++;
-        }
-
-        currentJumperIndex %= jumpers.size();
-
-        System.out.println("Iteration: " + currentIteration);
-        currentIteration++;
-
-        repaint();
-    }
-
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        // Draw the horizon
-        g.setColor(Color.WHITE);
-        g.drawLine(0, getHeight()/2, getWidth(), getHeight()/2);
-
-        // Calcular área renderizada
-        double minX = 0;
-        double maxX = 0;
-
-        for (Jumper jumper : jumpers) {
-            double x = jumper.getX();
-            if (x < minX) {
-                minX = x;
-            }
-
-            if (x > maxX) {
-                maxX = x;
+            if (nearestJumper.getCoins() == 0) {
+                jumpers.remove(nearestJumper);
             }
         }
 
-        // Draw jumper
-        for (Jumper jumper : jumpers) {
-            int intensity = (int)Math.min(Math.log(jumper.getCoins()) / Math.log(1_000_000.0f) * 255, 255);
-            intensity = Math.max(intensity, 0);
-
-            Color color = new Color(255 - intensity, intensity, 0);
-            g.setColor(color);
-
-            double x = jumper.getX();
-            x = (x - minX) / (maxX - minX) * 550 + 25;
-
-            g.drawOval((int)x - 10, (int)jumper.getY() - 20, 20, 20);
+        for (Jumper j: jumpers.toList()) {
+            j.update(deltaTime);
         }
-
-        // Sync screen
-        Toolkit.getDefaultToolkit().sync();
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
     }
 }

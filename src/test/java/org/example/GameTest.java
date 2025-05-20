@@ -25,7 +25,7 @@ public class GameTest {
     public void testQuantidadeCriaturas() {
         Game game = new Game();
         game.createJumpers(1000);
-        ArrayList<Jumper> jumpers = game.getJumpers();
+        CircularLinkedList<Jumper> jumpers = game.getJumpers();
         assertThat(jumpers.size()).isEqualTo(1000);
     }
 
@@ -41,9 +41,10 @@ public class GameTest {
     @Test
     public void testQuantidadeCriaturaZero() {
         Game game = new Game();
-        game.createJumpers(0);
-        ArrayList<Jumper> jumpers = game.getJumpers();
-        assertThat(jumpers.size()).isEqualTo(0);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> game.createJumpers(0)
+        );
     }
 
     @Test
@@ -51,9 +52,9 @@ public class GameTest {
         final int INITIAL_COINS = 1_000_000;
 
         Game game = new Game();
-        ArrayList<Jumper> jumpers = game.getJumpers();
+        CircularLinkedList<Jumper> jumpers = game.getJumpers();
 
-        for (Jumper jumper : jumpers) {
+        for (Jumper jumper : jumpers.toList()) {
             assertThat(jumper.getCoins()).isEqualTo(INITIAL_COINS);
         }
     }

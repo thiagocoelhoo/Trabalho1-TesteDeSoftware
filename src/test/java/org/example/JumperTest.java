@@ -92,4 +92,11 @@ public class JumperTest {
         jumper.steal(jumper);
         assertThat(jumper.getCoins()).isEqualTo(INITIAL_COIN_AMOUNT);
     }
+
+    @Test
+    public void testStealNull() {
+        Jumper jumper = new Jumper(0, 0);
+        jumper.steal(null);
+        assertThat(jumper.getCoins()).isEqualTo(INITIAL_COIN_AMOUNT);
+    }
 }
