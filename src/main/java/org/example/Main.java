@@ -1,21 +1,123 @@
 package org.example;
 import javax.swing.*;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
+import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
-        // Create window
-        JFrame window = new JFrame("Window");
+
+        // get current device screen dimensions
+        final int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+        final int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+
+        // create initial frame to set simulation quantity
+        JFrame startFrame = createStartFrame(screenWidth, screenHeight);
+        startFrame.setVisible(true);
+    }
+
+    private static JFrame createStartFrame(int screenWidth, int screenHeight) {
+        // create jumper quantity popup
+        JFrame qtWindow = getJFrame(screenWidth, screenHeight);
+
+        // panel para agrupar os elementos menores
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+
+        // força os itens para o meio da tela (empurra pra baixo)
+        mainPanel.add(Box.createVerticalGlue());
+
+        // label "quantas criaturas?"
+        JLabel quantidadeLabel = new JLabel("Quantas criaturas?");
+        quantidadeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainPanel.add(quantidadeLabel);
+
+        mainPanel.add(Box.createVerticalStrut(10)); // espaço entre elementos
+
+        // number selector
+        JSpinner quantidadeSpinner = getSpinner();
+
+        mainPanel.add(quantidadeSpinner);
+
+        // start button
+        JButton startSimButton = new JButton("Start");
+        startSimButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        startSimButton.addActionListener(e -> {
+            int qt = (int) quantidadeSpinner.getValue();
+            qtWindow.dispose(); // destroi a janela atual
+            JFrame mainWindow = createMainFrame(screenWidth, screenHeight,qt);
+        });
+
+        mainPanel.add(Box.createVerticalStrut(10));
+        mainPanel.add(startSimButton);
+
+        // força os itens para o meio da tela (empurra pra cima)
+        mainPanel.add(Box.createVerticalGlue());
+
+        qtWindow.add(mainPanel);
+
+        return qtWindow;
+    }
+
+    private static JFrame createMainFrame(int screenWidth, int screenHeight, int qtCreatures) {
+        // Create main window
+        JFrame window = new JFrame("Jumping Creatures");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Create and add the panel to the window
-        Game game = new Game();
+        Game game = new Game(qtCreatures);
         game.start();
         window.add(game);
         window.addKeyListener(game);
 
-        // Show the window
         window.pack();
+
+        int windowWidth = 600;
+        int windowHeight = 600;
+        window.setSize(windowWidth, windowHeight);
+
+        // center window in screen
+        int windowX = (screenWidth / 2) - (windowWidth / 2);
+        int windowY = (screenHeight / 2) - (windowHeight / 2);
+        window.setLocation(windowX, windowY);
         window.setVisible(true);
-        window.setSize(600, 600);
+
+        return window;
+    }
+
+    // metodo para abstrair a criação da janela de start
+    private static JFrame getJFrame(int screenWidth, int screenHeight) {
+        JFrame qtWindow = new JFrame("Bem vindo(a)!");
+        qtWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // window size and position
+        int qtWidth = 300;
+        int qtHeight = 200;
+        qtWindow.setSize(qtWidth, qtHeight);
+
+        int windowX = (screenWidth / 2) - (qtWidth / 2);
+        int windowY = (screenHeight / 2) - (qtHeight / 2);
+        qtWindow.setLocation(windowX, windowY);
+        return qtWindow;
+    }
+
+    private static JSpinner getSpinner() {
+        JSpinner quantidadeSpinner = new JSpinner();
+        JSpinner.NumberEditor editor = new JSpinner.NumberEditor(quantidadeSpinner, "#");
+        quantidadeSpinner.setEditor(editor);
+
+        // formatar campo para impedir letras ou caracteres inválidos
+        JFormattedTextField tf = editor.getTextField();
+        DefaultFormatterFactory factory = (DefaultFormatterFactory) tf.getFormatterFactory();
+        NumberFormatter numberFormatter = (NumberFormatter) factory.getDefaultFormatter();
+        numberFormatter.setAllowsInvalid(false);
+        numberFormatter.setMinimum(0);
+
+        // definições de tamanho e valores abrangidos
+        quantidadeSpinner.setModel(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
+        quantidadeSpinner.setMaximumSize(new Dimension(100, 30));
+        quantidadeSpinner.setPreferredSize(new Dimension(100, 30));
+        quantidadeSpinner.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return quantidadeSpinner;
     }
 }
