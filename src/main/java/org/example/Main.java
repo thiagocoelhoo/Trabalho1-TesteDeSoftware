@@ -45,7 +45,7 @@ public class Main {
         startSimButton.addActionListener(e -> {
             int qt = (int) quantidadeSpinner.getValue();
             qtWindow.dispose(); // destroi a janela atual
-            JFrame mainWindow = createMainFrame(screenWidth, screenHeight,qt);
+            createMainFrame(screenWidth, screenHeight,qt);
         });
 
         mainPanel.add(Box.createVerticalStrut(10));
