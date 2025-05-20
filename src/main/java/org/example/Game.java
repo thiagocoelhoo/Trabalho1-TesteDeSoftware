@@ -10,8 +10,7 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 public class Game extends JPanel implements ActionListener, KeyListener {
-    private final int DELAY = 0;
-    private final int MAX_ITERATIONS = 100_000;
+    private final int MAX_ITERATIONS = 10_000;
 
     private int currentIteration = 0;
     private ArrayList<Jumper> jumpers;
@@ -19,15 +18,29 @@ public class Game extends JPanel implements ActionListener, KeyListener {
 
     private Timer timer;
 
-    public Game() {
+    public Game(){
         // Setup panel
         setPreferredSize(new Dimension(600, 600));
         setBackground(Color.BLACK);
 
         // Create jumpers list
-        createJumpers(100);
+        createJumpers(100); // default amount
 
         // Create timer
+        final int DELAY = 0;
+        timer = new Timer(DELAY, this);
+        timer.setActionCommand("update");
+    }
+    public Game(int qtCriaturas) {
+        // Setup panel
+        setPreferredSize(new Dimension(600, 600));
+        setBackground(Color.BLACK);
+
+        // Create jumpers list
+        createJumpers(qtCriaturas);
+
+        // Create timer
+        final int DELAY = 0;
         timer = new Timer(DELAY, this);
         timer.setActionCommand("update");
     }
@@ -43,8 +56,11 @@ public class Game extends JPanel implements ActionListener, KeyListener {
     public void createJumpers(int amount) {
         jumpers = new ArrayList<Jumper>(amount);
 
+        if (amount < 2) {
+            throw new IllegalArgumentException("amount must be greater than 2");
+        }
         for (int i = 0; i < amount; i++) {
-            jumpers.add(i, new Jumper(600.0f / amount * i , 300));
+            jumpers.add(i, new Jumper(600.0f / amount * i , 280));
         }
 
         currentJumperIndex = 0;

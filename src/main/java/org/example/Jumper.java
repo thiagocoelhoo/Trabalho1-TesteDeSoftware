@@ -44,11 +44,14 @@ public class Jumper {
     }
 
     public void steal(Jumper other) {
+        int maxGoldTolerance = Integer.MAX_VALUE - this.coins;
+        if ((this.coins + (other.getCoins()/2)) > maxGoldTolerance) {
+            return;
+        }
+
         int steal = (int)Math.ceil(other.getCoins() / 2.0f);
         other.setCoins(other.getCoins() - steal);
         this.coins += steal;
     }
 
-    public void update() {
-    }
 }

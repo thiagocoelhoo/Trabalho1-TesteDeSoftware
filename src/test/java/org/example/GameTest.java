@@ -8,19 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GameTest {
-    /*
-    1) N criaturas (testar input para criaturas de 1 a n)
-    2) Dinheiro = um milhão (testar qt por bixo)
-    3) testar posição Xi de cada criatura
-    4) verificar ordem de processamento de criaturas (garantir que
-    são processadas em ordem especialmente em deleções)
-    5) Muita coisa:
-        5.1)  nova posição xI
-        5.2)  valor r (random)
-        5.3)  equação completa
-        5.4)  roubo de moedas e adição à quantidade do atual
-     */
 
+    // Teste de requisito: geração correta de criaturas
     @Test
     public void testQuantidadeCriaturas() {
         Game game = new Game();
@@ -29,23 +18,7 @@ public class GameTest {
         assertThat(jumpers.size()).isEqualTo(1000);
     }
 
-    @Test
-    public void testQuantidadeCriaturasNegativo() {
-        Game game = new Game();
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> game.createJumpers(-1)
-        );
-    }
-
-    @Test
-    public void testQuantidadeCriaturaZero() {
-        Game game = new Game();
-        game.createJumpers(0);
-        ArrayList<Jumper> jumpers = game.getJumpers();
-        assertThat(jumpers.size()).isEqualTo(0);
-    }
-
+    // Teste de requisito: gold inicial == um milhão para as n criaturas
     @Test
     public void testMoedasInicial() {
         final int INITIAL_COINS = 1_000_000;
@@ -57,4 +30,30 @@ public class GameTest {
             assertThat(jumper.getCoins()).isEqualTo(INITIAL_COINS);
         }
     }
+
+    //TODO verificar validade dos testes de quantidade (dupla inicialização de criaturas)
+
+    // Teste de fronteira: quantidade_criaturas < 0
+    // deve retornar exceção
+    @Test
+    public void testQuantidadeCriaturasNegativo() {
+        Game game = new Game();
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> game.createJumpers(-1)
+        );
+    }
+
+    // Teste de fronteira: quantidade_criaturas == 0
+    // deve retornar exceção
+    @Test
+    public void testQuantidadeCriaturaZero() {
+        Game game = new Game();
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> game.createJumpers(0)
+        );
+    }
+
+    //TODO Teste de posição inicial de cada criatura
 }
