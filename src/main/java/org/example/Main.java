@@ -59,7 +59,7 @@ public class Main {
         return qtWindow;
     }
 
-    private static JFrame createMainFrame(int screenWidth, int screenHeight, int qtCreatures) {
+    private static void createMainFrame(int screenWidth, int screenHeight, int qtCreatures) {
         // Create main window
         JFrame window = new JFrame("Jumping Creatures");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -82,7 +82,6 @@ public class Main {
         window.setLocation(windowX, windowY);
         window.setVisible(true);
 
-        return window;
     }
 
     // metodo para abstrair a criação da janela de start
