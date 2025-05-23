@@ -4,14 +4,18 @@ import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 
+/**
+ * Classe responsável pela criação da janela e inicialização da parte gráfica da aplicação
+ * (NÃO POSSUI A LÓGICA DA APLICAÇÃO)
+ */
+
 public class Main {
     public static void main(String[] args) {
-
-        // get current device screen dimensions
+        // Get current device screen dimensions
         final int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
         final int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 
-        // create initial frame to set simulation quantity
+        // Create initial frame to set simulation quantity
         JFrame startFrame = createStartFrame(screenWidth, screenHeight);
         startFrame.setVisible(true);
     }
@@ -65,15 +69,17 @@ public class Main {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Create and add the panel to the window
-        Game game = new Game(qtCreatures);
-        game.start();
-        window.add(game);
-        window.addKeyListener(game);
+        Game game = new Game();
+        game.createJumpers(qtCreatures);
+
+        GamePanel gamePanel = new GamePanel(game);
+        gamePanel.start();
+        window.add(gamePanel);
 
         window.pack();
 
-        int windowWidth = 600;
-        int windowHeight = 600;
+        int windowWidth = (int)(screenWidth * 0.6);
+        int windowHeight = (int)(screenHeight * 0.6);
         window.setSize(windowWidth, windowHeight);
 
         // center window in screen
@@ -81,7 +87,6 @@ public class Main {
         int windowY = (screenHeight / 2) - (windowHeight / 2);
         window.setLocation(windowX, windowY);
         window.setVisible(true);
-
     }
 
     // metodo para abstrair a criação da janela de start
