@@ -8,22 +8,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GameTest {
-    /*
-    1) N criaturas (testar input para criaturas de 1 a n)
-    2) Dinheiro = um milhão (testar qt por bixo)
-    3) testar posição Xi de cada criatura
-    4) verificar ordem de processamento de criaturas (garantir que
-    são processadas em ordem especialmente em deleções)
-    5) Muita coisa:
-        5.1)  nova posição xI
-        5.2)  valor r (random)
-        5.3)  equação completa
-        5.4)  roubo de moedas e adição à quantidade do atual
-     */
-
     private Game game;
 
     @BeforeEach
@@ -32,9 +18,10 @@ public class GameTest {
     }
 
     // ==============================================================
-    //     Criação de criaturas - Testes de domínio e fronteira
+    //     Criação de criaturas - Testes de domínio
     // ==============================================================
 
+    // Teste de domínio: criar 1000 criaturas com sucesso
     @Test
     public void testJumperAmountIsCorrect() {
         Game game = new Game();
@@ -43,24 +30,11 @@ public class GameTest {
         assertThat(jumpers.size()).isEqualTo(1000);
     }
 
-    @Test
-    public void testZeroJumperAmountShouldThrowException() {
-        Game game = new Game();
-        assertThatThrownBy(() -> game.createJumpers(0)).
-                isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    public void testNegativeJumperAmountShouldThrowException() {
-        Game game = new Game();
-        assertThatThrownBy(() -> game.createJumpers(-1))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
     // ==============================================================
     //     Quantidade de moedas - Testes de domínio
     // ==============================================================
 
+    // Teste de domínio: cada Jumper deve iniciar com a quantidade correta de moedas
     @Test
     public void testInitialCoinAmount() {
         final int INITIAL_COINS = 1_000_000;
@@ -75,16 +49,16 @@ public class GameTest {
     }
 
     // ==============================================================
-    //     Encontrar criatura mais próxima
+    //     Encontrar criatura mais próxima - Testes de domínio
     // ==============================================================
 
+    // Teste de domínio: garantir que a criatura mais próxima está à esquerda
     @Test
     public void testFindNearestJumperAtLeft() {
         Game game = new Game();
         game.createJumpers(3);
 
         List<Jumper> jumpers = game.getJumpers().toList();
-
         Jumper j1 = jumpers.get(0);
         Jumper j2 = jumpers.get(1);
         Jumper j3 = jumpers.get(2);
@@ -96,28 +70,88 @@ public class GameTest {
         assertThat(game.findNearestJumper(j2)).isEqualTo(j1);
     }
 
+    // Teste de domínio: garantir que a criatura mais próxima está à direita
     @Test
     public void testFindNearestJumperAtRight() {
         Game game = new Game();
         game.createJumpers(3);
 
         List<Jumper> jumpers = game.getJumpers().toList();
-
         Jumper j1 = jumpers.get(0);
         Jumper j2 = jumpers.get(1);
         Jumper j3 = jumpers.get(2);
 
         j1.setPosition(-1000.0);
-        j2.setPosition( 9500.0);
+        j2.setPosition(9500.0);
         j3.setPosition(10000.0);
 
         assertThat(game.findNearestJumper(j2)).isEqualTo(j3);
     }
 
     // ==============================================================
-    //     Update - Testes de domínio e fronteira
+    //     Física e atualização - Testes de domínio
     // ==============================================================
 
+    // Teste de domínio: roubo de moedas entre criaturas
+    @Test
+    void handleStealAndRemoval_ShouldStealHalfCoinsFromNearest() {
+        game.createJumpers(2);
+        Jumper j1 = game.getJumpers().toList().get(0);
+        Jumper j2 = game.getJumpers().toList().get(1);
+
+        j2.setCoins(100);
+        game.setCurrentJumper(j1);
+
+        game.handleStealAndRemoval();
+
+        assertThat(j1.getCoins()).isEqualTo(Jumper.INITIAL_COIN_AMOUNT + 50);
+        assertThat(j2.getCoins()).isEqualTo(50);
+    }
+
+    // Teste de domínio: remoção de criatura quando suas moedas chegam a zero
+    @Test
+    void handleStealAndRemoval_ShouldRemoveJumperWhenCoinsZero() {
+        game.createJumpers(2);
+        Jumper j1 = game.getJumpers().toList().get(0);
+        Jumper j2 = game.getJumpers().toList().get(1);
+
+        j2.setCoins(1); // após roubo, ficará com 0
+
+        for (int i = 0; i < 1000; i++) {
+            game.update(0.1);
+        }
+
+        assertThat(game.getJumpers().toList()).doesNotContain(j2);
+    }
+
+    // ==============================================================
+    //     Seleção de criaturas - Testes de domínio
+    // ==============================================================
+
+    // Teste de domínio: a seleção de criaturas deve seguir a ordem da lista
+    @Test
+    void testJumperSequenceIsCorrect() {
+        game.createJumpers(100);
+        List<Jumper> jumpers = game.getJumpers().toList();
+        Jumper currentJumper = null;
+        int counter = 0;
+
+        while (currentJumper != jumpers.get(jumpers.size() - 1)) {
+            game.selectNextJumper();
+            currentJumper = game.getCurrentJumper();
+
+            if (currentJumper != null) {
+                assertThat(currentJumper).isEqualTo(jumpers.get(counter));
+                counter += 1;
+            }
+        }
+    }
+
+    // ==============================================================
+    //     Atualização - Testes de fronteira
+    // ==============================================================
+
+    // Teste de fronteira: deltaTime = 0 não deve alterar a posição das criaturas
     @Test
     public void testUpdateDeltaTimeZeroShouldDoNothing() {
         // Se o jogo for atualizado com um deltaTime = 0.
@@ -138,7 +172,7 @@ public class GameTest {
             game.update(0.0);
         }
 
-        // Verificar se todas as criaturas permaneceram no mesmo lugar após vários os vários updates com deltaTime = 0
+        // Verificar se todas as criaturas permaneceram no mesmo lugar após os vários updates com deltaTime = 0
         for (int i = 0; i < jumpers.size(); i++) {
             Jumper jumper = jumpers.get(i);
             Double initialPosition = initialPositions.get(i);
@@ -146,6 +180,7 @@ public class GameTest {
         }
     }
 
+    // Teste de fronteira: deltaTime negativo deve lançar exceção
     @Test
     public void testUpdateDeltaTimeNegativeShouldThrowException() {
         // Um intervalo de tempo negativo não faz sentido,
@@ -158,47 +193,37 @@ public class GameTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    // ==============================================================
+    //     Criação de criaturas - Testes de fronteira
+    // ==============================================================
 
-    // =================================
-
+    // Teste de fronteira: criação de 0 criaturas deve lançar exceção
     @Test
-    void handleStealAndRemoval_ShouldStealHalfCoinsFromNearest() {
-        game.createJumpers(2);
-        Jumper j1 = game.getJumpers().toList().get(0);
-        Jumper j2 = game.getJumpers().toList().get(1);
-
-        j2.setCoins(100);
-        game.setCurrentJumper(j1);
-
-        game.handleStealAndRemoval();
-
-        assertThat(j1.getCoins()).isEqualTo(Jumper.INITIAL_COIN_AMOUNT + 50);
-        assertThat(j2.getCoins()).isEqualTo(50);
+    public void testZeroJumperAmountShouldThrowException() {
+        Game game = new Game();
+        assertThatThrownBy(() -> game.createJumpers(0)).
+                isInstanceOf(IllegalArgumentException.class);
     }
 
+    // Teste de fronteira: criação de quantidade negativa de criaturas deve lançar exceção
     @Test
-    void handleStealAndRemoval_ShouldRemoveJumperWhenCoinsZero() {
-        game.createJumpers(2);
-        Jumper j1 = game.getJumpers().toList().get(0);
-        Jumper j2 = game.getJumpers().toList().get(1);
-
-        j2.setCoins(1); // após roubo, ficará com 0
-
-        for (int i = 0; i < 1000; i++) {
-            game.update(0.1);
-        }
-
-        assertThat(game.getJumpers().toList()).doesNotContain(j2);
+    public void testNegativeJumperAmountShouldThrowException() {
+        Game game = new Game();
+        assertThatThrownBy(() -> game.createJumpers(-1))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
-    // ==================================================
+    // ==============================================================
+    //     Física - Testes de fronteira (borda da tela)
+    // ==============================================================
 
+    // Teste de fronteira: criatura deve parar se ultrapassar borda esquerda
     @Test
     void updateJumpersPhysics_ShouldStopJumperIfOutOfLeftBorder() {
         game.createJumpers(1);
         Jumper jumper = game.getJumpers().toList().get(0);
 
-        // Saltar para além da borda esqueda da tela
+        // Saltar para além da borda esquerda da tela
         jumper.jumpTo(Game.BORDER_LEFT - 100);
 
         // Simula vários updates
@@ -211,6 +236,7 @@ public class GameTest {
         assertThat(jumper.isMoving()).isFalse();
     }
 
+    // Teste de fronteira: criatura deve parar se ultrapassar borda direita
     @Test
     void updateJumpersPhysics_ShouldStopJumperIfOutOfRightBorder() {
         game.createJumpers(1);
@@ -227,28 +253,6 @@ public class GameTest {
         // Verificar se a criatura está exatamente na borda direita da tela
         assertThat(jumper.getX()).isEqualTo(Game.BORDER_RIGHT);
         assertThat(jumper.isMoving()).isFalse();
-    }
-
-    // ====================================================================
-    //     Verificar se as criaturas são selecionadas na ordem correta
-    // ====================================================================
-
-    @Test
-    void testJumperSequenceIsCorrect() {
-        game.createJumpers(100);
-        List<Jumper> jumpers = game.getJumpers().toList();
-        Jumper currentJumper = null;
-        int counter = 0;
-
-        while (currentJumper != jumpers.get(jumpers.size() - 1)) {
-            game.selectNextJumper();
-            currentJumper = game.getCurrentJumper();
-
-            if (currentJumper != null) {
-                assertThat(currentJumper).isEqualTo(jumpers.get(counter));
-                counter += 1;
-            }
-        }
     }
 
 }

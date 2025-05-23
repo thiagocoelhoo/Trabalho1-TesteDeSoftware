@@ -17,7 +17,7 @@ import java.util.List;
 */
 public class GamePanel extends JPanel implements ActionListener {
     private final int frameInterval = 16; // Interval in milliseconds
-    private float simulationSpeed = 1.0f;
+    private float simulationSpeed = 10.0f;
     private Timer timer;
     private long lastTick = 0;
 

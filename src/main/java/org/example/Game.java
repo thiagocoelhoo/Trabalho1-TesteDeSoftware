@@ -29,7 +29,7 @@ public class Game {
     }
 
     public void createJumpers(int amount) {
-        jumpers = new CircularLinkedList<Jumper>();
+        jumpers = new CircularLinkedList<>();
 
         if (amount <= 0) {
             throw new IllegalArgumentException();
@@ -111,7 +111,6 @@ public class Game {
         if (deltaTime < 0.0) {
             throw new IllegalArgumentException();
         }
-
         handleCurrentJumper();
         updateJumpersPhysics(deltaTime);
     }
