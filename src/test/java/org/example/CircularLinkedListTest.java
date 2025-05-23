@@ -16,13 +16,13 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void newListShouldBeEmpty() {
+    void testNewListShouldBeEmpty() {
         assertThat(list.isEmpty()).isTrue();
         assertThat(list.size()).isZero();
     }
 
     @Test
-    void addingSingleElementShouldSetSizeToOne() {
+    void testAddingSingleElementShouldSetSizeToOne() {
         list.add("A");
 
         assertThat(list.size()).isEqualTo(1);
@@ -31,7 +31,7 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void addingMultipleElementsShouldPreserveOrder() {
+    void testAddingMultipleElementsShouldPreserveOrder() {
         list.add("A");
         list.add("B");
         list.add("C");
@@ -41,7 +41,7 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void getShouldReturnCorrectElementAtIndex() {
+    void testGetShouldReturnCorrectElementAtIndex() {
         list.add("A");
         list.add("B");
         list.add("C");
@@ -52,7 +52,7 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void getWithNegativeIndexShouldThrow() {
+    void testGetWithNegativeIndexShouldThrow() {
         list.add("A");
 
         assertThatThrownBy(() -> list.get(-1))
@@ -60,7 +60,7 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void getWithIndexEqualToSizeShouldThrow() {
+    void testGetWithIndexEqualToSizeShouldThrow() {
         list.add("A");
 
         assertThatThrownBy(() -> list.get(1))
@@ -68,7 +68,7 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void removeElementByValueShouldShrinkSize() {
+    void testRemoveElementByValueShouldShrinkSize() {
         list.add("A");
         list.add("B");
         list.add("C");
@@ -80,7 +80,7 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void removeElementByIndexShouldShrinkSize() {
+    void testRemoveElementByIndexShouldShrinkSize() {
         list.add("A");
         list.add("B");
         list.add("C");
@@ -92,7 +92,7 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void removeElementAtZeroShouldRemoveHead() {
+    void testRemoveElementAtZeroShouldRemoveHead() {
         list.add("A");
         list.add("B");
 
@@ -102,7 +102,7 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void removeOnlyElementShouldLeaveListEmpty() {
+    void testRemoveOnlyElementShouldLeaveListEmpty() {
         list.add("X");
         list.remove("X");
 
@@ -111,7 +111,7 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void iteratorShouldLoopCircularly() {
+    void testIteratorShouldLoopCircularly() {
         list.add("A");
         list.add("B");
         list.add("C");
@@ -124,7 +124,7 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void iteratorShouldThrowIfEmpty() {
+    void testIteratorShouldThrowIfEmpty() {
         Iterator<String> it = list.iterator();
 
         assertThatThrownBy(it::next)
@@ -132,7 +132,17 @@ class CircularLinkedListTest {
     }
 
     @Test
-    void toListOnEmptyListShouldReturnEmptyList() {
+    void testToListOnEmptyListShouldReturnEmptyList() {
         assertThat(list.toList()).isEmpty();
+    }
+
+    @Test
+    void testRemoveElemetThatsNotInTheList() {
+        list.add("A");
+        list.add("B");
+        list.add("C");
+
+        assertThatThrownBy(() -> list.remove("G"))
+                .isInstanceOf(java.util.NoSuchElementException.class);
     }
 }

@@ -3,6 +3,7 @@ package org.example;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class CircularLinkedList<T> {
     class Node {
@@ -53,12 +54,15 @@ public class CircularLinkedList<T> {
     /**
      * Remove the object from the circular list
      * @param item
+     * @throws NoSuchElementException if the item is not in the list
      */
-    public void remove(T item) {
+    public void remove(T item) throws NoSuchElementException {
         Node node = head;
+        boolean found = false;
 
         for (int i = 0; i < size; i++) {
             if (node.item.equals(item)) {
+                found = true;
                 node.prev.next = node.next;
                 node.next.prev = node.prev;
                 size--;
@@ -69,6 +73,10 @@ public class CircularLinkedList<T> {
 
         if (node == head) {
             head = node.next;
+        }
+
+        if (!found) {
+            throw new NoSuchElementException("O elemento não foi encontrado.");
         }
     }
 
@@ -93,7 +101,13 @@ public class CircularLinkedList<T> {
         size--;
     }
 
-    public T get(int index) {
+    /**
+     * Returns the element at the index
+     * @param index
+     * @return Returns the element at the index
+     * @throws IndexOutOfBoundsException
+     */
+    public T get(int index) throws IndexOutOfBoundsException {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException();
 

@@ -2,15 +2,22 @@ package org.example;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Color;
+import java.awt.Toolkit;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.List;
 
+/**
+* Classe destinada à parte gráfica da aplicação
+*/
 public class GamePanel extends JPanel implements ActionListener {
     private final int frameInterval = 16; // Interval in milliseconds
-    private float simulationSpeed = 5.0f;
+    private float simulationSpeed = 1.0f;
     private Timer timer;
     private long lastTick = 0;
 
@@ -20,7 +27,7 @@ public class GamePanel extends JPanel implements ActionListener {
     private BufferedImage spoinkSprite;
     private BufferedImage spoinkRedSprite;
 
-    public GamePanel() {
+    public GamePanel(Game game) {
         // Setup panel
         setPreferredSize(new Dimension(800, 450));
         setBackground(Color.BLACK);
@@ -35,10 +42,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
 
         // Create game
-        game = new Game();
-
-        // Create jumpers list
-        game.createJumpers(10);
+        this.game = game;
 
         // Create timer
         timer = new Timer(frameInterval, this);
@@ -53,7 +57,7 @@ public class GamePanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         long currentTick = System.nanoTime();
-        double deltaTime = (currentTick - lastTick) / 1000000000.0;
+        double deltaTime = (currentTick - lastTick) / 1e9;
 
         game.update(deltaTime * simulationSpeed);
         repaint();
@@ -62,43 +66,26 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void drawJumper(Graphics g, Jumper jumper) {
-        int minX = -100_000;
-        int maxX = 100_000;
-
-        double x = jumper.getX();
-        double y = jumper.getY() - spoinkSprite.getHeight() + 20;
-
-        x = (x - minX) / (maxX - minX) * 550 + 25;
-        g.setColor(Color.GREEN);
-
-        BufferedImage sprite;
-
+        // Select sprite based on the amount of coins
+        BufferedImage sprite = spoinkSprite;
         if (jumper.getCoins() < 100) {
             sprite = spoinkRedSprite;
-        } else {
-            sprite = spoinkSprite;
         }
 
-        g.drawImage(
-                sprite,
-                (int)x,
-                (int)y,
-                new Color(255, 0, 0, 0),
-                null
-        );
+        // Calculate sprite position on screen
+        double w = sprite.getWidth() * (getWidth() / getPreferredSize().getWidth());
+        double h = sprite.getHeight() * (getHeight() / getPreferredSize().getHeight());
+        double x = (jumper.getX() - Game.BORDER_LEFT) / (Game.BORDER_RIGHT - Game.BORDER_LEFT) * getWidth() - (w / 2.0);
+        double y = jumper.getY() - h + 20 + getHeight()*0.7;
 
-        // int intensity = (int)Math.min(Math.log(jumper.getCoins()) / Math.log(1_000_000.0f) * 255, 255);
-        // intensity = Math.max(intensity, 0);
-        // Color color = new Color(255 - intensity, intensity, 0);
-        // g.setColor(color);
-        // g.drawOval((int)x - 10, (int)jumper.getY() - 20, 20, 20);
+        // Draw image on screen
+        final Color imageBackgroundColor = new Color(0, 0, 0, 0);
+        g.drawImage(sprite, (int)x, (int)y, (int)w, (int)h, imageBackgroundColor, null);
     }
 
     public void drawScenario(Graphics g) {
         // Draw the horizon
-        // g.setColor(Color.WHITE);
-        // g.drawLine(0, getHeight()/2, getWidth(), getHeight()/2);
-        g.drawImage(backgroundImage, 0, 0, null);
+        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
     }
 
     @Override
@@ -109,7 +96,7 @@ public class GamePanel extends JPanel implements ActionListener {
         drawScenario(g);
 
         // Draw jumper
-        for (Jumper jumper : game.getJumpers().toList()) {
+        for (Jumper jumper: game.getJumpers().toList()) {
             drawJumper(g, jumper);
         }
 

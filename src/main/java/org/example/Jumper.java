@@ -3,11 +3,10 @@ package org.example;
 import java.util.Random;
 
 public class Jumper {
-    public final int INITIAL_COIN_AMOUNT = 100_000;
-    private final int FLOOR_HEIGHT = 300;
-    private final int JUMP_FORCE = 1000;
+    public final static int INITIAL_COIN_AMOUNT = 1_000_000;
+    private final static int JUMP_FORCE = 1000;
 
-    private final Random randomGenerator = new Random();
+    private final static Random randomGenerator = new Random();
 
     private int coins;
     private double x;
@@ -16,9 +15,9 @@ public class Jumper {
     private double velocityX;
     private double targetX;
 
-    public Jumper(double x, double y) {
-        this.x = x;
-        this.y = y;
+    public Jumper(double position) {
+        this.x = position;
+        this.y = 0;
         this.velocityY = 0.0;
         this.velocityX = 0.0;
         this.targetX = x;
@@ -33,6 +32,10 @@ public class Jumper {
         return y;
     }
 
+    public void setPosition(double x) {
+        this.x = x;
+    }
+
     public int getCoins() {
         return coins;
     }
@@ -45,15 +48,25 @@ public class Jumper {
         return x + random * coins;
     }
 
-    public boolean isMoving() {
-        return velocityX != 0;
+    public void jumpTo(double target) {
+        this.targetX = target;
+        this.velocityX = target - this.x;
+        this.velocityY = -JUMP_FORCE / 2.0;
     }
 
     public void jump() {
         float r = randomGenerator.nextFloat(-1, 1);
-        this.targetX = calcJump(this.x, r, this.coins);
-        this.velocityX = targetX - x;
-        this.velocityY = -JUMP_FORCE / 2;
+        double target = calcJump(this.x, r, this.coins);
+        jumpTo(target);
+    }
+
+    public void stopJumping() {
+        velocityX = 0;
+        targetX = x;
+    }
+
+    public boolean isMoving() {
+        return velocityY != 0 || velocityX != 0;
     }
 
     public void steal(Jumper other) {
@@ -70,8 +83,8 @@ public class Jumper {
         this.x += velocityX * deltaTime;
         this.y += velocityY * deltaTime;
 
-        if (this.y > FLOOR_HEIGHT) {
-            this.y = FLOOR_HEIGHT;
+        if (this.y > 0) {
+            this.y = 0;
             this.velocityY = 0;
         } else {
             this.velocityY += JUMP_FORCE * deltaTime;
@@ -79,9 +92,7 @@ public class Jumper {
 
         if ((velocityX > 0 && x >= targetX) || (velocityX < 0 && x <= targetX)) {
             this.x = targetX;
-            this.y = FLOOR_HEIGHT;
             this.velocityX = 0;
-            this.velocityY = 0;
         }
     }
 }

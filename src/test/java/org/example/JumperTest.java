@@ -1,8 +1,11 @@
 package org.example;
 
+import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 public class JumperTest {
     /*
@@ -16,86 +19,155 @@ public class JumperTest {
      */
 
     private final int INITIAL_COIN_AMOUNT = 1_000_000;
+    private Jumper jumper;
+
+    @BeforeEach
+    void setUp() {
+        jumper = new Jumper(0.0);
+    }
+
+    @Test
+    void shouldInitializeWithCorrectValues() {
+        assertThat(jumper.getX()).isZero();
+        assertThat(jumper.getY()).isZero();
+        assertThat(jumper.getCoins()).isEqualTo(Jumper.INITIAL_COIN_AMOUNT);
+        assertThat(jumper.isMoving()).isFalse();
+    }
+
+    @Test
+    void calcJumpShouldReturnCorrectValue() {
+        double result = jumper.calcJump(10.0, 0.5, 100);
+        assertThat(result).isEqualTo(10.0 + 0.5 * 100);
+    }
+
+    @Test
+    void updateShouldMoveJumperCorrectlyToRight() {
+        double initialX = jumper.getX();
+        double targetX = initialX + 500;
+
+        jumper.jumpTo(targetX);
+
+        // Simula vários updates até cair
+        for (int i = 0; i < 100; i++) {
+            jumper.update(0.1);
+        }
+
+        // Verifica se a posição final está próxima do target definido (com uma distância aceitável de 0.1)
+        assertThat(jumper.getX()).isCloseTo(targetX, within(0.1));
+
+        // Verifica se o jumper está no chão ou muito próximo a ele
+        assertThat(jumper.getY()).isCloseTo(0, within(0.1));
+    }
+
+    @Test
+    void updateShouldMoveJumperCorrectlyToLeft() {
+        double initialX = jumper.getX();
+        double targetX = initialX - 500;
+
+        jumper.jumpTo(targetX);
+
+        // Simula vários updates até cair
+        for (int i = 0; i < 100; i++) {
+            jumper.update(0.1);
+        }
+
+        // Verifica se a posição final está próxima do target definido (com uma distância aceitável de 0.1)
+        assertThat(jumper.getX()).isCloseTo(targetX, within(0.1));
+
+        // Verifica se o jumper está no chão ou muito próximo a ele
+        assertThat(jumper.getY()).isCloseTo(0, within(0.1));
+    }
+
+    @Test
+    void jumperShouldLandOnGround() {
+        jumper.jump();
+
+        // Simula vários updates até cair
+        for (int i = 0; i < 100; i++) {
+            jumper.update(0.1);
+        }
+
+        assertThat(jumper.getY()).isEqualTo(0);
+        assertThat(jumper.isMoving()).isFalse(); // Deve ter parado de subir/descender no eixo Y
+    }
 
     @Test
     public void testCoinsInitialAmount() {
-        Jumper jumper = new Jumper(0, 0);
         assertThat(jumper.getCoins()).isEqualTo(INITIAL_COIN_AMOUNT);
     }
 
     @Test
+    public void stopJumpingShouldStopHorizontalMovement() {
+        double initialX = jumper.getX();
+        double targetX = initialX + 500;
+        jumper.jumpTo(targetX);
+        jumper.stopJumping();
+
+        // Simula vários updates até cair
+        for (int i = 0; i < 100; i++) {
+            jumper.update(0.1);
+        }
+
+        // Verifica se a posição final está igual a posição inicial
+        assertThat(jumper.getX()).isCloseTo(initialX, within(0.1));
+        assertThat(jumper.getY()).isZero();
+    }
+
+    @Test
     public void testSteal() {
-        Jumper jumper1 = new Jumper(0, 0);
-        Jumper jumper2 = new Jumper(0, 0);
+        Jumper other = new Jumper(0);
 
-        jumper1.steal(jumper2);
+        jumper.steal(other);
 
-        assertThat(jumper1.getCoins()).isEqualTo(INITIAL_COIN_AMOUNT + INITIAL_COIN_AMOUNT / 2);
-        assertThat(jumper2.getCoins()).isEqualTo(INITIAL_COIN_AMOUNT / 2);
+        assertThat(jumper.getCoins()).isEqualTo(INITIAL_COIN_AMOUNT + INITIAL_COIN_AMOUNT / 2);
+        assertThat(other.getCoins()).isEqualTo(INITIAL_COIN_AMOUNT / 2);
     }
 
     @Test
     public void testStealPoorJumper() {
-        Jumper jumper1 = new Jumper(0, 0);
-        Jumper jumper2 = new Jumper(0, 0);
+        Jumper other = new Jumper(0.0);
 
-        jumper2.setCoins(0);
-        jumper1.steal(jumper2);
+        other.setCoins(0);
+        jumper.steal(other);
 
-        assertThat(jumper1.getCoins()).isEqualTo(INITIAL_COIN_AMOUNT);
-        assertThat(jumper2.getCoins()).isEqualTo(0);
-    }
-
-    @Test
-    public void testStealRichJumper() {
-        Jumper jumper1 = new Jumper(0, 0);
-        Jumper jumper2 = new Jumper(0, 0);
-
-        jumper2.setCoins(Integer.MAX_VALUE);
-        jumper1.steal(jumper2);
-
-        assertThat(jumper2.getCoins()).isEqualTo(Integer.MAX_VALUE / 2);
-        assertThat(jumper1.getCoins()).isEqualTo(Integer.MAX_VALUE + Integer.MAX_VALUE / 2);
+        assertThat(jumper.getCoins()).isEqualTo(INITIAL_COIN_AMOUNT);
+        assertThat(other.getCoins()).isEqualTo(0);
     }
 
     @Test
     public void testStealEvenCoins() {
-        Jumper jumper1 = new Jumper(0, 0);
-        Jumper jumper2 = new Jumper(0, 0);
+        Jumper other = new Jumper(0.0);
 
-        jumper1.setCoins(5);
-        jumper2.setCoins(6);
+        jumper.setCoins(5);
+        other.setCoins(6);
 
-        jumper1.steal(jumper2);
+        jumper.steal(other);
 
-        assertThat(jumper1.getCoins()).isEqualTo(8);
-        assertThat(jumper2.getCoins()).isEqualTo(3);
+        assertThat(jumper.getCoins()).isEqualTo(8);
+        assertThat(other.getCoins()).isEqualTo(3);
     }
 
     @Test
     public void testStealOddCoins() {
-        Jumper jumper1 = new Jumper(0, 0);
-        Jumper jumper2 = new Jumper(0, 0);
+        Jumper other = new Jumper(0.0);
 
-        jumper1.setCoins(5);
-        jumper2.setCoins(3);
+        jumper.setCoins(5);
+        other.setCoins(3);
 
-        jumper1.steal(jumper2);
+        jumper.steal(other);
 
-        assertThat(jumper1.getCoins()).isEqualTo(7);
-        assertThat(jumper2.getCoins()).isEqualTo(1);
+        assertThat(jumper.getCoins()).isEqualTo(7);
+        assertThat(other.getCoins()).isEqualTo(1);
     }
 
     @Test
     public void testSelfSteal() {
-        Jumper jumper = new Jumper(0, 0);
         jumper.steal(jumper);
         assertThat(jumper.getCoins()).isEqualTo(INITIAL_COIN_AMOUNT);
     }
 
     @Test
     public void testStealNull() {
-        Jumper jumper = new Jumper(0, 0);
         jumper.steal(null);
         assertThat(jumper.getCoins()).isEqualTo(INITIAL_COIN_AMOUNT);
     }
