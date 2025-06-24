@@ -16,12 +16,15 @@ import java.util.List;
 * Classe destinada à parte gráfica da aplicação
 */
 public class GamePanel extends JPanel implements ActionListener {
-    private final int frameInterval = 16; // Interval in milliseconds
-    private float simulationSpeed = 10.0f;
+    private int frameInterval = 10; // Interval in milliseconds
+    private float simulationSpeed = 50.0f;
     private Timer timer;
     private long lastTick = 0;
 
-    private Game game;
+    private final int MAX_ITERATIONS = 2_000;
+    private static int iteration = 0;
+
+    private final Game game;
 
     private BufferedImage backgroundImage;
     private BufferedImage spoinkSprite;
@@ -60,6 +63,25 @@ public class GamePanel extends JPanel implements ActionListener {
         double deltaTime = (currentTick - lastTick) / 1e9;
 
         game.update(deltaTime * simulationSpeed);
+
+        if (iteration >= MAX_ITERATIONS || game.getJumpers().size() < 3){
+            frameInterval = 0;
+            simulationSpeed = 0;
+            Jumper bestJumper = new Jumper(0);
+            for (Jumper j : game.getJumpers().toList()){
+                if (j.getCoins() > bestJumper.getCoins()) {
+                    bestJumper = j;
+                }
+            }
+
+            timer.stop();
+            System.out.println("Simulation ended! The best jumper has " + bestJumper.getCoins() + " coins.");
+
+            return;
+        }
+
+        iteration++;
+        System.out.println("Iteration: " + iteration);
         repaint();
 
         lastTick = currentTick;

@@ -45,6 +45,7 @@ public class Game {
     }
 
     public Jumper findNearestJumper(Jumper jumper) {
+        //TODO cluster de criaturas ao se aproximarem
         Double minDistance = null;
         Jumper nearestJumper = null;
 

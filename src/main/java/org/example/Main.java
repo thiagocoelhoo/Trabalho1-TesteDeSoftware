@@ -3,6 +3,8 @@ import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * Classe responsável pela criação da janela e inicialização da parte gráfica da aplicação
@@ -23,6 +25,7 @@ public class Main {
     private static JFrame createStartFrame(int screenWidth, int screenHeight) {
         // create jumper quantity popup
         JFrame qtWindow = getJFrame(screenWidth, screenHeight);
+        qtWindow.isFocusable();
 
         // panel para agrupar os elementos menores
         JPanel mainPanel = new JPanel();
@@ -46,6 +49,7 @@ public class Main {
         // start button
         JButton startSimButton = new JButton("Start");
         startSimButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         startSimButton.addActionListener(e -> {
             int qt = (int) quantidadeSpinner.getValue();
             qtWindow.dispose(); // destroi a janela atual
@@ -67,6 +71,15 @@ public class Main {
         // Create main window
         JFrame window = new JFrame("Jumping Creatures");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.isFocusable();
+
+        window.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    System.exit(0);
+                }
+            }
+        });
 
         // Create and add the panel to the window
         Game game = new Game();
