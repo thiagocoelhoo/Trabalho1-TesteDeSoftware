@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.Creatures.Guardian;
+import org.example.Creatures.Jumper;
+
 import java.util.Iterator;
 
 /**
@@ -40,7 +43,8 @@ public class Game {
             Jumper j = new Jumper(BORDER_LEFT + x );
             jumpers.add(j);
         }
-
+        Guardian guardian = new Guardian(BORDER_LEFT + (BORDER_RIGHT - BORDER_LEFT) / amount * amount);
+        jumpers.add(guardian);
         jumperIterator = jumpers.iterator();
     }
 
@@ -59,7 +63,6 @@ public class Game {
                 }
             }
         }
-
         return nearestJumper;
     }
 
@@ -87,10 +90,28 @@ public class Game {
             return;
         }
 
-        currentJumper.steal(nearest);
+        // ninguém rouba nem mata o guardião
+        if (nearest.isGuardian()){
+            return;
+        }
 
-        if (nearest.getCoins() == 0) {
+        // guardian latrocina cluster
+        if (currentJumper.isGuardian && nearest.isCluster){
+            currentJumper.steal(nearest);
             jumpers.remove(nearest);
+        }
+
+        // clusters comem normais
+        if (currentJumper.isCluster && !nearest.isCluster && !nearest.isGuardian){
+            currentJumper.steal(nearest); // cluster engrandece
+            jumpers.remove(nearest);     // mata jumper menor
+        }
+        else{
+            currentJumper.steal(nearest);
+
+            if (nearest.getCoins() == 0) {
+                jumpers.remove(nearest);
+            }
         }
     }
 

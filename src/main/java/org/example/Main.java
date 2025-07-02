@@ -7,7 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 /**
- * Classe responsável pela criação da janela e inicialização da parte gráfica da aplicação
+ * Classe responsável pela criação da janela e inicialização da parte gráfica da simulação
  * (NÃO POSSUI A LÓGICA DA APLICAÇÃO)
  */
 
@@ -24,7 +24,7 @@ public class Main {
 
     private static JFrame createStartFrame(int screenWidth, int screenHeight) {
         // create jumper quantity popup
-        JFrame qtWindow = getJFrame(screenWidth, screenHeight);
+        JFrame qtWindow = newJFrame(screenWidth, screenHeight);
         qtWindow.isFocusable();
 
         // panel para agrupar os elementos menores
@@ -41,8 +41,7 @@ public class Main {
 
         mainPanel.add(Box.createVerticalStrut(10)); // espaço entre elementos
 
-        // number selector
-        JSpinner quantidadeSpinner = getSpinner();
+        JSpinner quantidadeSpinner = newSpinner();  // number selector
 
         mainPanel.add(quantidadeSpinner);
 
@@ -103,7 +102,7 @@ public class Main {
     }
 
     // metodo para abstrair a criação da janela de start
-    private static JFrame getJFrame(int screenWidth, int screenHeight) {
+    private static JFrame newJFrame(int screenWidth, int screenHeight) {
         JFrame qtWindow = new JFrame("Bem vindo(a)!");
         qtWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -118,7 +117,7 @@ public class Main {
         return qtWindow;
     }
 
-    private static JSpinner getSpinner() {
+    private static JSpinner newSpinner() {
         JSpinner quantidadeSpinner = new JSpinner();
         JSpinner.NumberEditor editor = new JSpinner.NumberEditor(quantidadeSpinner, "#");
         quantidadeSpinner.setEditor(editor);

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Creatures;
 
 import java.util.Random;
 
@@ -15,6 +15,9 @@ public class Jumper {
     private double velocityX;
     private double targetX;
 
+    public boolean isCluster; // talvez seja suficiente
+    public boolean isGuardian;
+
     public Jumper(double position) {
         this.x = position;
         this.y = 0;
@@ -22,6 +25,8 @@ public class Jumper {
         this.velocityX = 0.0;
         this.targetX = x;
         this.coins = INITIAL_COIN_AMOUNT;
+        this.isCluster = false;
+        this.isGuardian = false;
     }
 
     public double getX() {
@@ -34,6 +39,14 @@ public class Jumper {
 
     public void setPosition(double x) {
         this.x = x;
+    }
+
+    public void setCluster(){
+        this.isCluster = true;
+    }
+
+    public void setGuardian(){
+        this.isGuardian = true;
     }
 
     public int getCoins() {
@@ -69,14 +82,17 @@ public class Jumper {
         return velocityY != 0 || velocityX != 0;
     }
 
+    // Jumper e Cluster(?)
     public void steal(Jumper other) {
-        if (other == null) {
-            return;
-        }
+        if (!isCluster && !isGuardian){ // se é jumper normal
+            if (other == null) {
+                return;
+            }
 
-        int steal = (int)Math.ceil(other.getCoins() / 2.0f);
-        other.setCoins(other.getCoins() - steal);
-        this.coins += steal;
+            int steal = (int)Math.ceil(other.getCoins() / 2.0f);
+            other.setCoins(other.getCoins() - steal);
+            this.coins += steal;
+        }
     }
 
     public void update(double deltaTime) {
@@ -94,5 +110,9 @@ public class Jumper {
             this.x = targetX;
             this.velocityX = 0;
         }
+    }
+
+    public boolean isGuardian() {
+        return isGuardian;
     }
 }

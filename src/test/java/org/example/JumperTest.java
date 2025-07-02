@@ -1,6 +1,6 @@
 package org.example;
 
-import org.assertj.core.data.Percentage;
+import org.example.Creatures.Jumper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
