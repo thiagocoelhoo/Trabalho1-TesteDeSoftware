@@ -104,10 +104,10 @@ public class GamePanel extends JPanel implements ActionListener {
         }
 
         if (jumper.isGuardian){
-            sprite = guardianSprite;
+            sprite = guardian;
         }
         if (jumper.isCluster){
-            sprite = clusterSprite;
+            sprite = cluster;
         }
 
         // Calculate sprite position on screen
