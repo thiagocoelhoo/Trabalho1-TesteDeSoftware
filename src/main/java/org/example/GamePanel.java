@@ -18,7 +18,7 @@ import java.io.File;
 */
 public class GamePanel extends JPanel implements ActionListener {
     private int frameInterval = 10; // Interval in milliseconds
-    private float simulationSpeed = 10.0f;
+    private float simulationSpeed = 50.0f;
     private final Timer timer;
     private long lastTick = 0;
 
@@ -70,8 +70,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
         game.update(deltaTime * simulationSpeed);
 
-        //TODO ajustar para novas condições de parada
-        if (iteration >= MAX_ITERATIONS || game.getJumpers().size() < 3){
+        //TODO bug fix: guardian is not the only on screen
+        if (game.getJumpers().size() < 2){
             frameInterval = 0;
             simulationSpeed = 0;
             Jumper bestJumper = new Jumper(0);
@@ -82,12 +82,12 @@ public class GamePanel extends JPanel implements ActionListener {
             }
 
             timer.stop();
-            System.out.println("Simulation ended! The best jumper has " + bestJumper.getCoins() + " coins.");
+            System.out.println("Simulation ended! The guardian has " + bestJumper.getCoins() + " coins.");
             return;
         }
 
         iteration++;
-        System.out.println("Iteration: " + iteration);
+        System.out.println("Guardian coins: " + Game.guardian.getCoins());
         repaint();
 
         lastTick = currentTick;

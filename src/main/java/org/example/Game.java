@@ -16,6 +16,8 @@ public class Game {
     private Iterator<Jumper> jumperIterator;
     private Jumper currentJumper = null;
 
+    public static Guardian guardian;
+
     public Game() {
     }
     
@@ -43,7 +45,7 @@ public class Game {
             Jumper j = new Jumper(BORDER_LEFT + x );
             jumpers.add(j);
         }
-        Guardian guardian = new Guardian(BORDER_LEFT + (BORDER_RIGHT - BORDER_LEFT) / amount * amount);
+        guardian = new Guardian(BORDER_LEFT + (BORDER_RIGHT - BORDER_LEFT) / amount * amount);
         jumpers.add(guardian);
         jumperIterator = jumpers.iterator();
     }
@@ -97,7 +99,7 @@ public class Game {
 
         // guardian latrocina cluster
         if (currentJumper.isGuardian && nearest.isCluster){
-            currentJumper.steal(nearest);
+            currentJumper.setCoins(currentJumper.getCoins() + nearest.getCoins());
             jumpers.remove(nearest);
         }
 
@@ -106,11 +108,16 @@ public class Game {
             currentJumper.steal(nearest); // cluster engrandece
             jumpers.remove(nearest);     // mata jumper menor
         }
+
+        else if (!currentJumper.isCluster && !nearest.isCluster && !nearest.isGuardian && !currentJumper.isGuardian){
+            currentJumper.setCluster();
+            currentJumper.setCoins(currentJumper.getCoins() + nearest.getCoins());
+            //TODO generate new nearest for cluster to steal from
+        }
         else{
             currentJumper.steal(nearest);
-
             if (nearest.getCoins() == 0) {
-                jumpers.remove(nearest);
+               jumpers.remove(nearest);
             }
         }
     }
