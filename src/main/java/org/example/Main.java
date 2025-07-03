@@ -18,20 +18,114 @@ public class Main {
         final int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 
         // Create initial frame to set simulation quantity
-        JFrame startFrame = createStartFrame(screenWidth, screenHeight);
-        startFrame.setVisible(true);
+
+        JFrame loginFrame = createLoginFrame(screenWidth, screenHeight);
+        loginFrame.setVisible(true);
+    }
+
+    private static JFrame createLoginFrame(int screenWidth, int screenHeight){
+        JFrame login = createJFrame(screenWidth, screenHeight, 500, 400);
+        login.isFocusable();
+
+        // panel para agrupar os elementos menores
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+
+        // força os itens para o meio da tela (empurra para baixo)
+        //mainPanel.add(Box.createVerticalGlue());
+
+        mainPanel.add(Box.createVerticalStrut(10));
+
+        // label Bem-vindo
+        JLabel bemVindoLabel = new JLabel("Bem-vindo(a)!");
+        bemVindoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        bemVindoLabel.setFont(new Font("Arial", Font.BOLD, 40));
+        mainPanel.add(bemVindoLabel);
+
+        mainPanel.add(Box.createVerticalStrut(40));
+
+        // user panel
+        JPanel userPanel = new JPanel();
+        userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.X_AXIS));
+        userPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel userLabel = new JLabel("Usuário: ");
+        userLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        JTextField userInputField = createJTextField(true);
+
+        userPanel.add(userLabel);
+        userPanel.add(userInputField);
+
+        mainPanel.add(userPanel);
+        mainPanel.add(Box.createVerticalStrut(25));
+
+        // password panel
+        JPanel passwordPanel = new JPanel();
+        passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.X_AXIS));
+        passwordPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel passwordLabel = new JLabel("Senha:   ");
+        passwordLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        JTextField passwordInputField = createJTextField(false);
+
+        passwordPanel.add(passwordLabel);
+        passwordPanel.add(passwordInputField);
+
+        mainPanel.add(passwordPanel);
+
+        mainPanel.add(Box.createVerticalStrut(30));
+
+        // botões
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // botão de login
+        JButton loginButton = new JButton("Entrar");
+        loginButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //TODO actionListener do login
+
+        buttonPanel.add(loginButton);
+
+        buttonPanel.add(Box.createVerticalStrut(5));
+
+        JLabel loginLabel = new JLabel("Novo usuário?");
+        loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //TODO actionListener da label de novo usuário
+
+        buttonPanel.add(loginLabel);
+
+
+
+        mainPanel.add(buttonPanel);
+
+        // força os itens para o meio da tela (empurra para cima)
+        mainPanel.add(Box.createVerticalGlue());
+
+        login.add(mainPanel);
+
+        return login;
+    }
+
+    //TODO receber um usuário do login
+    private static JFrame createMainFrame(int screenWidth, int screenHeight){
+        JFrame mainFrame = createJFrame(screenWidth, screenHeight, 600, 400);
+
+
+        return mainFrame;
     }
 
     private static JFrame createStartFrame(int screenWidth, int screenHeight) {
         // create jumper quantity popup
-        JFrame qtWindow = getJFrame(screenWidth, screenHeight);
+        JFrame qtWindow = createJFrame(screenWidth, screenHeight, 300, 200);
         qtWindow.isFocusable();
 
         // panel para agrupar os elementos menores
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        // força os itens para o meio da tela (empurra pra baixo)
+        // força os itens para o meio da tela (empurra para baixo)
         mainPanel.add(Box.createVerticalGlue());
 
         // label "quantas criaturas?"
@@ -53,13 +147,13 @@ public class Main {
         startSimButton.addActionListener(e -> {
             int qt = (int) quantidadeSpinner.getValue();
             qtWindow.dispose(); // destroi a janela atual
-            createMainFrame(screenWidth, screenHeight,qt);
+            createSimFrame(screenWidth, screenHeight, qt);
         });
 
         mainPanel.add(Box.createVerticalStrut(10));
         mainPanel.add(startSimButton);
 
-        // força os itens para o meio da tela (empurra pra cima)
+        // força os itens para o meio da tela (empurra para cima)
         mainPanel.add(Box.createVerticalGlue());
 
         qtWindow.add(mainPanel);
@@ -67,8 +161,8 @@ public class Main {
         return qtWindow;
     }
 
-    private static void createMainFrame(int screenWidth, int screenHeight, int qtCreatures) {
-        // Create main window
+    private static void createSimFrame(int screenWidth, int screenHeight, int qtCreatures) {
+        // Create simulation window
         JFrame window = new JFrame("Jumping Creatures");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.isFocusable();
@@ -102,21 +196,33 @@ public class Main {
         window.setVisible(true);
     }
 
-    // metodo para abstrair a criação da janela de start
-    private static JFrame getJFrame(int screenWidth, int screenHeight) {
-        JFrame qtWindow = new JFrame("Bem vindo(a)!");
+    // método para abstrair a criação da janela de start
+    private static JFrame createJFrame(int screenWidth, int screenHeight, int w, int h) {
+        JFrame qtWindow = new JFrame("Jumping Creatures!");
         qtWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // window size and position
-        int qtWidth = 300;
-        int qtHeight = 200;
-        qtWindow.setSize(qtWidth, qtHeight);
+        qtWindow.setSize(w, h);
 
-        int windowX = (screenWidth / 2) - (qtWidth / 2);
-        int windowY = (screenHeight / 2) - (qtHeight / 2);
+        int windowX = (screenWidth / 2) - (w / 2);
+        int windowY = (screenHeight / 2) - (h / 2);
         qtWindow.setLocation(windowX, windowY);
         return qtWindow;
     }
+
+    private static JTextField createJTextField(boolean user){
+        JTextField textField = new JTextField();
+        textField.setMaximumSize(new Dimension(200, 30));
+        textField.setPreferredSize(new Dimension(200, 30));
+
+        if (!user){
+            textField = new JPasswordField();
+            textField.setMaximumSize(new Dimension(200, 30));
+            textField.setPreferredSize(new Dimension(200, 30));
+        }
+        return textField;
+    }
+
 
     private static JSpinner getSpinner() {
         JSpinner quantidadeSpinner = new JSpinner();
