@@ -1,4 +1,4 @@
-package org.example;
+package org.example.app.models;
 
 import java.util.Random;
 
@@ -14,6 +14,7 @@ public class Jumper {
     private double velocityY;
     private double velocityX;
     private double targetX;
+    public JumperType type = JumperType.CRIATURA;
 
     public Jumper(double position) {
         this.x = position;

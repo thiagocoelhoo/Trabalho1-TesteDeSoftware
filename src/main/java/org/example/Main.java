@@ -1,4 +1,7 @@
 package org.example;
+import org.example.app.controllers.GameController;
+import org.example.app.view.GameView;
+
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
@@ -69,10 +72,10 @@ public class Main {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Create and add the panel to the window
-        Game game = new Game();
+        GameController game = new GameController();
         game.createJumpers(qtCreatures);
 
-        GamePanel gamePanel = new GamePanel(game);
+        GameView gamePanel = new GameView(game);
         gamePanel.start();
         window.add(gamePanel);
 

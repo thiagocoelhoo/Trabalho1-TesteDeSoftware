@@ -1,11 +1,15 @@
-package org.example;
+package org.example.app.controllers;
+
+import org.example.app.models.Jumper;
+import org.example.app.models.JumperType;
+import org.example.utils.CircularLinkedList;
 
 import java.util.Iterator;
 
 /**
  * Classe com a parte lógica da simulação
  */
-public class Game {
+public class GameController {
     public static final float BORDER_LEFT = -4_000_000;
     public static final float BORDER_RIGHT = 4_000_000;
 
@@ -13,7 +17,7 @@ public class Game {
     private Iterator<Jumper> jumperIterator;
     private Jumper currentJumper = null;
 
-    public Game() {
+    public GameController() {
     }
     
     public CircularLinkedList<Jumper> getJumpers() {
@@ -86,11 +90,33 @@ public class Game {
             return;
         }
 
-        currentJumper.steal(nearest);
+        Double distance = Math.abs(currentJumper.getX() - nearest.getX());
 
-        if (nearest.getCoins() == 0) {
-            jumpers.remove(nearest);
+        if (distance < 100000) {
+            if (
+                    (currentJumper.type == JumperType.CRIATURA && nearest.type == JumperType.CRIATURA) ||
+                    (currentJumper.type == JumperType.CRIATURA && nearest.type == JumperType.CLUSTER) ||
+                    (currentJumper.type == JumperType.CLUSTER && nearest.type == JumperType.CRIATURA) ||
+                    (currentJumper.type == JumperType.CLUSTER && nearest.type == JumperType.CLUSTER)
+            ) {
+                currentJumper.type = JumperType.CLUSTER;
+                currentJumper.setCoins(currentJumper.getCoins() + nearest.getCoins());
+                jumpers.remove(nearest);
+            } else if (currentJumper.type == JumperType.CLUSTER) {
+
+            } else if (currentJumper.type == JumperType.GUARDIAO && nearest.type == JumperType.CLUSTER) {
+                currentJumper.setCoins(currentJumper.getCoins() + nearest.getCoins());
+                jumpers.remove(nearest);
+            }
+        } else {
+            // Assalto
+            currentJumper.steal(nearest);
+
+            if (nearest.getCoins() == 0) {
+                jumpers.remove(nearest);
+            }
         }
+
     }
 
     public void updateJumpersPhysics(double deltaTime) {

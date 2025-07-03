@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.app.controllers.GameController;
+import org.example.app.models.Jumper;
+import org.example.utils.CircularLinkedList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,11 +27,11 @@ public class GameTest {
         5.4)  roubo de moedas e adição à quantidade do atual
      */
 
-    private Game game;
+    private GameController game;
 
     @BeforeEach
     public void setUp() {
-        game = new Game();
+        game = new GameController();
     }
 
     // ==============================================================
@@ -37,7 +40,7 @@ public class GameTest {
 
     @Test
     public void testJumperAmountIsCorrect() {
-        Game game = new Game();
+        GameController game = new GameController();
         game.createJumpers(1000);
         CircularLinkedList<Jumper> jumpers = game.getJumpers();
         assertThat(jumpers.size()).isEqualTo(1000);
@@ -45,14 +48,14 @@ public class GameTest {
 
     @Test
     public void testZeroJumperAmountShouldThrowException() {
-        Game game = new Game();
+        GameController game = new GameController();
         assertThatThrownBy(() -> game.createJumpers(0)).
                 isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void testNegativeJumperAmountShouldThrowException() {
-        Game game = new Game();
+        GameController game = new GameController();
         assertThatThrownBy(() -> game.createJumpers(-1))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -65,7 +68,7 @@ public class GameTest {
     public void testInitialCoinAmount() {
         final int INITIAL_COINS = 1_000_000;
 
-        Game game = new Game();
+        GameController game = new GameController();
         game.createJumpers(100);
         CircularLinkedList<Jumper> jumpers = game.getJumpers();
 
@@ -80,7 +83,7 @@ public class GameTest {
 
     @Test
     public void testFindNearestJumperAtLeft() {
-        Game game = new Game();
+        GameController game = new GameController();
         game.createJumpers(3);
 
         List<Jumper> jumpers = game.getJumpers().toList();
@@ -98,7 +101,7 @@ public class GameTest {
 
     @Test
     public void testFindNearestJumperAtRight() {
-        Game game = new Game();
+        GameController game = new GameController();
         game.createJumpers(3);
 
         List<Jumper> jumpers = game.getJumpers().toList();
@@ -123,7 +126,7 @@ public class GameTest {
         // Se o jogo for atualizado com um deltaTime = 0.
         // Nenhuma criatura deve ser movida.
 
-        Game game = new Game();
+        GameController game = new GameController();
         game.createJumpers(100);
 
         List<Jumper> jumpers = game.getJumpers().toList();
@@ -151,7 +154,7 @@ public class GameTest {
         // Um intervalo de tempo negativo não faz sentido,
         // então uma exceção deve ser lançada.
 
-        Game game = new Game();
+        GameController game = new GameController();
         game.createJumpers(100);
 
         assertThatThrownBy(() -> game.update(-0.1))
@@ -199,7 +202,7 @@ public class GameTest {
         Jumper jumper = game.getJumpers().toList().get(0);
 
         // Saltar para além da borda esqueda da tela
-        jumper.jumpTo(Game.BORDER_LEFT - 100);
+        jumper.jumpTo(GameController.BORDER_LEFT - 100);
 
         // Simula vários updates
         for (int i = 0; i < 100; i++) {
@@ -207,7 +210,7 @@ public class GameTest {
         }
 
         // Verificar se a criatura está exatamente na borda esquerda da tela
-        assertThat(jumper.getX()).isEqualTo(Game.BORDER_LEFT);
+        assertThat(jumper.getX()).isEqualTo(GameController.BORDER_LEFT);
         assertThat(jumper.isMoving()).isFalse();
     }
 
@@ -217,7 +220,7 @@ public class GameTest {
         Jumper jumper = game.getJumpers().toList().get(0);
 
         // Saltar para além da borda direita da tela
-        jumper.jumpTo(Game.BORDER_RIGHT + 100);
+        jumper.jumpTo(GameController.BORDER_RIGHT + 100);
 
         // Simula vários updates
         for (int i = 0; i < 100; i++) {
@@ -225,7 +228,7 @@ public class GameTest {
         }
 
         // Verificar se a criatura está exatamente na borda direita da tela
-        assertThat(jumper.getX()).isEqualTo(Game.BORDER_RIGHT);
+        assertThat(jumper.getX()).isEqualTo(GameController.BORDER_RIGHT);
         assertThat(jumper.isMoving()).isFalse();
     }
 

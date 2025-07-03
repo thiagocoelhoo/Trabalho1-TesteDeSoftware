@@ -1,4 +1,8 @@
-package org.example;
+package org.example.app.view;
+
+import org.example.app.controllers.GameController;
+import org.example.app.models.Jumper;
+import org.example.app.models.JumperType;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -10,24 +14,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.List;
 
 /**
 * Classe destinada à parte gráfica da aplicação
 */
-public class GamePanel extends JPanel implements ActionListener {
-    private final int frameInterval = 16; // Interval in milliseconds
-    private float simulationSpeed = 1.0f;
+public class GameView extends JPanel implements ActionListener {
+    private final int frameInterval = 1; // Interval in milliseconds
+    private float simulationSpeed = 1.5f;
     private Timer timer;
     private long lastTick = 0;
 
-    private Game game;
+    private GameController game;
 
     private BufferedImage backgroundImage;
+    private BufferedImage aegislashSprite;
+    private BufferedImage grumpigSprite;
     private BufferedImage spoinkSprite;
     private BufferedImage spoinkRedSprite;
 
-    public GamePanel(Game game) {
+    public GameView(GameController game) {
         // Setup panel
         setPreferredSize(new Dimension(800, 450));
         setBackground(Color.BLACK);
@@ -35,6 +40,8 @@ public class GamePanel extends JPanel implements ActionListener {
         // Load resources
         try {
             backgroundImage = ImageIO.read(new File("background.png"));
+            aegislashSprite = ImageIO.read(new File("aegislash.png"));
+            grumpigSprite = ImageIO.read(new File("grumpig.png"));
             spoinkSprite = ImageIO.read(new File("spoink.png"));
             spoinkRedSprite = ImageIO.read(new File("spoink_red.png"));
         } catch (Exception e) {
@@ -68,14 +75,21 @@ public class GamePanel extends JPanel implements ActionListener {
     public void drawJumper(Graphics g, Jumper jumper) {
         // Select sprite based on the amount of coins
         BufferedImage sprite = spoinkSprite;
-        if (jumper.getCoins() < 100) {
-            sprite = spoinkRedSprite;
+
+        if (jumper.type == JumperType.CRIATURA) {
+            if (jumper.getCoins() < 100) {
+                sprite = spoinkRedSprite;
+            }
+        } else if (jumper.type == JumperType.CLUSTER) {
+            sprite = grumpigSprite;
+        } else if (jumper.type == JumperType.GUARDIAO) {
+            sprite = aegislashSprite;
         }
 
         // Calculate sprite position on screen
         double w = sprite.getWidth() * (getWidth() / getPreferredSize().getWidth());
         double h = sprite.getHeight() * (getHeight() / getPreferredSize().getHeight());
-        double x = (jumper.getX() - Game.BORDER_LEFT) / (Game.BORDER_RIGHT - Game.BORDER_LEFT) * getWidth() - (w / 2.0);
+        double x = (jumper.getX() - GameController.BORDER_LEFT) / (GameController.BORDER_RIGHT - GameController.BORDER_LEFT) * getWidth() - (w / 2.0);
         double y = jumper.getY() - h + 20 + getHeight()*0.7;
 
         // Draw image on screen
