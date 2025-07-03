@@ -33,7 +33,7 @@ public class GameController {
     }
 
     public void createJumpers(int amount) {
-        jumpers = new CircularLinkedList<Jumper>();
+        jumpers = new CircularLinkedList<>();
 
         if (amount <= 0) {
             throw new IllegalArgumentException();
@@ -49,6 +49,7 @@ public class GameController {
     }
 
     public Jumper findNearestJumper(Jumper jumper) {
+        //TODO cluster de criaturas ao se aproximarem
         Double minDistance = null;
         Jumper nearestJumper = null;
 
@@ -137,7 +138,6 @@ public class GameController {
         if (deltaTime < 0.0) {
             throw new IllegalArgumentException();
         }
-
         handleCurrentJumper();
         updateJumpersPhysics(deltaTime);
     }
