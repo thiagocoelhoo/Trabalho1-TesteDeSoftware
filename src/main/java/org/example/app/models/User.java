@@ -4,11 +4,11 @@ import java.awt.image.BufferedImage;
 
 public class User {
     private String username;
-    private char[] password;
+    private String password;
     private int score;
-    private BufferedImage avatar;
+    private String avatar;
 
-    public User(String username, char[] password, BufferedImage a) {
+    public User(String username, String password, String a) {
         this.username = username;
         this.password = password;
         this.score = 0;
@@ -23,11 +23,11 @@ public class User {
         this.username = username;
     }
 
-    public char[] getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(char[] password) {
+    public void setPassword(String password) {
         this.password = password;
     }
     public int getScore() {
@@ -37,11 +37,11 @@ public class User {
         this.score = score;
     }
 
-    public BufferedImage getAvatar() {
+    public String getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(BufferedImage avatar) {
+    public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 }

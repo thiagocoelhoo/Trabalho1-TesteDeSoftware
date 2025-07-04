@@ -48,7 +48,9 @@ public class MainFrame extends JFrame {
         JButton addUserButton = new JButton("Adicionar Usuário");
         addUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         //TODO alterar conforme BD
-        addUserButton.addActionListener(e -> {});
+        addUserButton.addActionListener(e -> {
+            new NewUserFrame(screenWidth, screenHeight);
+        });
 
         JButton removeUserButton = new JButton("Remover Usuário");
         removeUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);

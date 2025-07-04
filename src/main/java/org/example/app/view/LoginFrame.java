@@ -4,6 +4,8 @@ import org.example.app.models.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class LoginFrame extends JFrame {
 
@@ -67,7 +69,7 @@ public class LoginFrame extends JFrame {
         loginButton.setFont(new Font("Arial", Font.PLAIN, 16));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginButton.addActionListener(e -> {
-            User usuario = new User(userInputField.getText(), passwordInputField.getPassword(), null);
+            User usuario = new User(userInputField.getText(), new String(passwordInputField.getPassword()), null);
             dispose();
             MainFrame main = new MainFrame(screenWidth, screenHeight, usuario);
             main.setVisible(true);
@@ -78,7 +80,17 @@ public class LoginFrame extends JFrame {
 
         JLabel loginLabel = new JLabel("Novo usuário?");
         loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // TODO adicionar actionListener para novo usuário se quiser
+
+        loginLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                new NewUserFrame(screenWidth, screenHeight);
+            }
+
+            public void mouseEntered(MouseEvent e) {
+                loginLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+        });
+
         buttonPanel.add(loginLabel);
 
         mainPanel.add(buttonPanel);
