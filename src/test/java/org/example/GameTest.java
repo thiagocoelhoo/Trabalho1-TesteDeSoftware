@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.app.controllers.GameController;
 import org.example.app.models.Jumper;
+import org.example.app.models.JumperType;
 import org.example.utils.CircularLinkedList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ public class GameTest {
         GameController game = new GameController();
         game.createJumpers(1000);
         CircularLinkedList<Jumper> jumpers = game.getJumpers();
-        assertThat(jumpers.size()).isEqualTo(1000);
+        assertThat(jumpers.size()).isEqualTo(1001); // Considerando o guardião como uma outra criatura
     }
 
     // ==============================================================
@@ -47,6 +48,7 @@ public class GameTest {
         CircularLinkedList<Jumper> jumpers = game.getJumpers();
 
         for (Jumper jumper : jumpers.toList()) {
+            if (jumper.type == JumperType.GUARDIAO) continue; // Ignorar o guardião pois ele começa com 0 moedas
             assertThat(jumper.getCoins()).isEqualTo(INITIAL_COINS);
         }
     }

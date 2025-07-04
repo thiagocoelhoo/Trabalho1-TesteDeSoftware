@@ -39,22 +39,30 @@ public class GameController {
             throw new IllegalArgumentException();
         }
 
+        amount += 1; // Considerar a criação do guardião
+
+        // Criar criaturas
         for (int i = 0; i < amount; i++) {
             double x = (BORDER_RIGHT - BORDER_LEFT) / amount * i;
             Jumper j = new Jumper(BORDER_LEFT + x );
             jumpers.add(j);
         }
 
+        // Criar guardião
+        Jumper guardian = jumpers.get(jumpers.size() - 1);
+        guardian.type = JumperType.GUARDIAO;
+        guardian.setCoins(0);
+
         jumperIterator = jumpers.iterator();
     }
 
     public Jumper findNearestJumper(Jumper jumper) {
-        //TODO cluster de criaturas ao se aproximarem
         Double minDistance = null;
         Jumper nearestJumper = null;
 
         for (Jumper j : jumpers.toList()) {
-            if (j != jumper) {
+            // Não considerar o guardião
+            if (j != jumper && j.type != JumperType.GUARDIAO) {
                 double distance = Math.abs(j.getX() - jumper.getX());
 
                 if (minDistance == null || distance < minDistance) {
@@ -84,6 +92,26 @@ public class GameController {
         currentJumper.jump();
     }
 
+    public boolean checkCollision(Jumper j1, Jumper j2) {
+        double distance = Math.abs(j1.getX() - j2.getX());
+        final int collision_threshold = 150000;
+        return (distance < collision_threshold);
+    }
+
+    public void handleCollision(Jumper j1, Jumper j2) {
+        if (
+            (j1.type == JumperType.CRIATURA || j1.type == JumperType.CLUSTER ) &&
+            j2.type == JumperType.CRIATURA
+        ) {
+            j1.type = JumperType.CLUSTER;
+            j1.setCoins(j1.getCoins() + j2.getCoins());
+            jumpers.remove(j2);
+        } else if (j1.type == JumperType.GUARDIAO && j2.type == JumperType.CLUSTER) {
+            j1.setCoins(j1.getCoins() + j2.getCoins());
+            jumpers.remove(j2);
+        }
+    }
+
     public void handleStealAndRemoval() {
         Jumper nearest = findNearestJumper(currentJumper);
 
@@ -91,33 +119,27 @@ public class GameController {
             return;
         }
 
-        Double distance = Math.abs(currentJumper.getX() - nearest.getX());
-
-        if (distance < 100000) {
-            if (
-                    (currentJumper.type == JumperType.CRIATURA && nearest.type == JumperType.CRIATURA) ||
-                    (currentJumper.type == JumperType.CRIATURA && nearest.type == JumperType.CLUSTER) ||
-                    (currentJumper.type == JumperType.CLUSTER && nearest.type == JumperType.CRIATURA) ||
-                    (currentJumper.type == JumperType.CLUSTER && nearest.type == JumperType.CLUSTER)
-            ) {
-                currentJumper.type = JumperType.CLUSTER;
-                currentJumper.setCoins(currentJumper.getCoins() + nearest.getCoins());
-                jumpers.remove(nearest);
-            } else if (currentJumper.type == JumperType.CLUSTER) {
-
-            } else if (currentJumper.type == JumperType.GUARDIAO && nearest.type == JumperType.CLUSTER) {
-                currentJumper.setCoins(currentJumper.getCoins() + nearest.getCoins());
-                jumpers.remove(nearest);
-            }
-        } else {
-            // Assalto
-            currentJumper.steal(nearest);
-
-            if (nearest.getCoins() == 0) {
-                jumpers.remove(nearest);
-            }
+        // Colisão
+        if (checkCollision(currentJumper, nearest)) {
+            handleCollision(currentJumper, nearest);
+            nearest = findNearestJumper(currentJumper);
         }
 
+        // Assalto
+        if (currentJumper.type == JumperType.GUARDIAO) {
+            // O Guardião não deve assaltar ninguém.
+            return;
+        }
+
+        if (nearest == null) {
+            // Se não houver outra criatura/cluster retorne.
+            return;
+        }
+
+        currentJumper.steal(nearest);
+        if (nearest.getCoins() == 0) {
+            jumpers.remove(nearest);
+        }
     }
 
     public void updateJumpersPhysics(double deltaTime) {

@@ -20,7 +20,7 @@ import java.io.File;
 */
 public class GameView extends JPanel implements ActionListener {
     private int frameInterval = 1; // Interval in milliseconds
-    private float simulationSpeed = 1.5f;
+    private float simulationSpeed = 10.0f;
     private Timer timer;
     private long lastTick = 0;
 
@@ -28,7 +28,6 @@ public class GameView extends JPanel implements ActionListener {
     private static int iteration = 0;
 
     private final GameController game;
-
 
     private BufferedImage backgroundImage;
     private BufferedImage aegislashSprite;
@@ -72,24 +71,7 @@ public class GameView extends JPanel implements ActionListener {
 
         game.update(deltaTime * simulationSpeed);
 
-        if (iteration >= MAX_ITERATIONS || game.getJumpers().size() < 3){
-            frameInterval = 0;
-            simulationSpeed = 0;
-            Jumper bestJumper = new Jumper(0);
-            for (Jumper j : game.getJumpers().toList()){
-                if (j.getCoins() > bestJumper.getCoins()) {
-                    bestJumper = j;
-                }
-            }
-
-            timer.stop();
-            System.out.println("Simulation ended! The best jumper has " + bestJumper.getCoins() + " coins.");
-
-            return;
-        }
-
         iteration++;
-        System.out.println("Iteration: " + iteration);
         repaint();
 
         lastTick = currentTick;
