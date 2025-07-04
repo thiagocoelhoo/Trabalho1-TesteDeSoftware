@@ -1,7 +1,5 @@
 package org.example.app.models;
 
-import java.awt.image.BufferedImage;
-
 public class User {
     private String username;
     private String password;
@@ -12,7 +10,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.score = 0;
-        avatar = a;
+        this.avatar = a;
     }
 
     public String getUsername() {
@@ -30,9 +28,11 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
     public int getScore() {
         return score;
     }
+
     public void setScore(int score) {
         this.score = score;
     }
