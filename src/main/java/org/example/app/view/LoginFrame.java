@@ -1,6 +1,6 @@
 package org.example.app.view;
 
-import org.example.app.controllers.LoginController;
+import org.example.app.controllers.UserController;
 import org.example.app.models.User;
 
 import javax.swing.*;
@@ -73,7 +73,7 @@ public class LoginFrame extends JFrame {
             String username = userInputField.getText();
             String password = new String(passwordInputField.getPassword());
 
-            User usuario = LoginController.authenticate(username, password);
+            User usuario = UserController.authenticate(username, password);
 
             if (usuario == null) {
                 userInputField.setText("");
