@@ -3,6 +3,8 @@ package org.example.app.controllers;
 import org.example.app.models.UserDAO;
 import org.example.app.models.User;
 
+import java.util.List;
+
 
 public class UserController {
     private static final UserDAO userDAO = new UserDAO();
@@ -29,5 +31,9 @@ public class UserController {
 
     static public boolean userExists(String username) {
         return userDAO.findByUsername(username) != null;
+    }
+
+    static public List<User> getAllUsers() {
+        return userDAO.findAll();
     }
 }

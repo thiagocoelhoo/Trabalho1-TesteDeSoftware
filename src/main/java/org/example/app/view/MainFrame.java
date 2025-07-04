@@ -1,9 +1,11 @@
 package org.example.app.view;
 
+import org.example.app.controllers.UserController;
 import org.example.app.models.User;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.List;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
@@ -136,40 +138,28 @@ public class MainFrame extends JFrame {
         add(mainPanel);
     }
 
-    //TODO mover para Controller quando funcional
-    private static JTable getJTable() {
-        String [] columnNames = {"Usuário", "Quantidade de Simulações", "Simulações Bem-Sucedidas"};
-        Object[][] data = {
-                {"alice", "12", "9"},
-                {"bob", "20", "15"},
-                {"carol", "8", "6"},
-                {"daniel", "17", "14"},
-                {"erika", "5", "4"},
-                {"fernando", "10", "7"},
-                {"gabriela", "14", "12"},
-                {"heitor", "9", "5"},
-                {"isabela", "13", "11"},
-                {"joao", "7", "6"},
-                {"heitor", "9", "5"},
-                {"isabela", "13", "11"},
-                {"joao", "7", "6"},
-                {"heitor", "9", "5"},
-                {"isabela", "13", "11"},
-                {"joao", "7", "6"}
-        };
 
-        // cria um modelo que impede as células de serem editadas
-        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+    private JTable getJTable() {
+        String[] columnNames = {"Usuário", "Quantidade de Simulações", "Simulações Bem-Sucedidas"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // bloqueia edição
+                return false;
             }
         };
+
+        List<User> users = UserController.getAllUsers();
+
+        for (User user : users) {
+            // valores de simulação mocados
+            Object[] row = {user.getUsername(), 0, 0};
+            model.addRow(row);
+        }
 
         JTable tab = new JTable(model);
         tab.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         tab.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tab.setEnabled(true); // permite seleção
         return tab;
     }
+
 }
