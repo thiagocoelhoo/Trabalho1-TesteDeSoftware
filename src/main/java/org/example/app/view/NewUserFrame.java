@@ -1,5 +1,6 @@
 package org.example.app.view;
 
+import org.example.app.controllers.UserController;
 import org.example.app.models.User;
 
 import javax.swing.*;
@@ -71,7 +72,16 @@ public class NewUserFrame extends JFrame {
             }
 
             // constrói o User
-            newUser = new User(name, password, selectedImagePath);
+
+            if (UserController.userExists(name)) {
+                JOptionPane.showMessageDialog(this, "O nome de usuário \""+name+"\" já está em uso");
+                return;
+            }
+
+            if (!UserController.createUser(name, password, selectedImagePath)) {
+                JOptionPane.showMessageDialog(this, "Houve algum erro durante a criação do usuário. Tente novamente.");
+                return;
+            }
 
             // aqui você poderia salvar o user em um banco, arquivo, etc
             JOptionPane.showMessageDialog(this, "Usuário criado com sucesso!");
