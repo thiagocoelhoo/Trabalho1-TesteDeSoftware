@@ -3,6 +3,7 @@ package org.example.app.view;
 import org.example.app.models.User;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
@@ -157,9 +158,18 @@ public class MainFrame extends JFrame {
                 {"joao", "7", "6"}
         };
 
-        JTable tab = new JTable(data, columnNames);
+        // cria um modelo que impede as células de serem editadas
+        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // bloqueia edição
+            }
+        };
+
+        JTable tab = new JTable(model);
         tab.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        tab.setEnabled(false);
+        tab.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tab.setEnabled(true); // permite seleção
         return tab;
     }
 }
