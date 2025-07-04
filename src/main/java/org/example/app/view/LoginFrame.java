@@ -1,5 +1,6 @@
 package org.example.app.view;
 
+import org.example.app.controllers.LoginController;
 import org.example.app.models.User;
 
 import javax.swing.*;
@@ -69,10 +70,20 @@ public class LoginFrame extends JFrame {
         loginButton.setFont(new Font("Arial", Font.PLAIN, 16));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginButton.addActionListener(e -> {
-            User usuario = new User(userInputField.getText(), new String(passwordInputField.getPassword()), null);
-            dispose();
-            MainFrame main = new MainFrame(screenWidth, screenHeight, usuario);
-            main.setVisible(true);
+            String username = userInputField.getText();
+            String password = new String(passwordInputField.getPassword());
+
+            User usuario = LoginController.authenticate(username, password);
+
+            if (usuario == null) {
+                userInputField.setText("");
+                passwordInputField.setText("");
+            }
+            else {
+                dispose();
+                MainFrame main = new MainFrame(screenWidth, screenHeight, usuario);
+                main.setVisible(true);
+            }
         });
 
         buttonPanel.add(loginButton);
