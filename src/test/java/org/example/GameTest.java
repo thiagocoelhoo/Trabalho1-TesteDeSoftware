@@ -260,4 +260,67 @@ public class GameTest {
         assertThat(jumper.isMoving()).isFalse();
     }
 
+    @Test
+    void testClusterCreation() {
+        game.createJumpers(2);
+
+        List<Jumper> jumpers = game.getJumpers().toList();
+        Jumper j1 = jumpers.get(0);
+        Jumper j2 = jumpers.get(1);
+
+        j1.setCoins(300);
+        j2.setCoins(200);
+
+        // Definir mesma posição para ambas criaturas para garantir colisão
+        j1.setPosition(1000.0);
+        j2.setPosition(1000.0);
+
+        // Executar lógica de colisão e assalto
+        game.setCurrentJumper(j1);
+        game.handleStealAndRemoval();
+
+        // Verificar se j2 foi removido
+        List<Jumper> remaining = game.getJumpers().toList();
+        assertThat(remaining).doesNotContain(j2);
+
+        // Verificar se apenas duas criaturas sobraram (j1 e o guardião)
+        assertThat(remaining.size()).isEqualTo(2);
+
+        // Verificar se j1 virou CLUSTER
+        assertThat(j1.type).isEqualTo(JumperType.CLUSTER);
+
+        // Verificar se g1' = g1 + g2 (soma das moedas das duas criaturas)
+        assertThat(j1.getCoins()).isEqualTo(500);
+    }
+
+    @Test
+    void testGuardianDestroyCluster() {
+        game.createJumpers(1);
+
+        List<Jumper> jumpers = game.getJumpers().toList();
+        Jumper cluster = jumpers.get(0);
+        Jumper guardian = jumpers.get(1);
+
+        cluster.setCoins(200);
+        cluster.type = JumperType.CLUSTER;
+
+        // Forçar colisão
+        cluster.setPosition(1000.0);
+        guardian.setPosition(1000.0);
+
+        // Executar lógica de detecção e tratamento de colisão
+        game.setCurrentJumper(guardian);
+        game.handleStealAndRemoval();
+
+        // Verificar se o cluster foi removido
+        List<Jumper> remaining = game.getJumpers().toList();
+        assertThat(remaining).doesNotContain(cluster);
+
+        // Verificar que realmente só há uma criatura (o guardião)
+        assertThat(remaining.size()).isEqualTo(1);
+        assertThat(remaining.get(0)).isEqualTo(guardian);
+
+        // Verificar quantidade de moedas do guardião
+        assertThat(guardian.getCoins()).isEqualTo(200);
+    }
 }
