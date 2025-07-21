@@ -12,8 +12,11 @@ public class LoginFrame extends JFrame {
 
     private final JTextField userInputField;
     private final JPasswordField passwordInputField;
+    private UserController userController;
 
-    public LoginFrame(int screenWidth, int screenHeight) {
+    public LoginFrame(int screenWidth, int screenHeight, UserController userController) {
+        this.userController = userController;
+
         // configura a janela
         setTitle("Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,6 +44,7 @@ public class LoginFrame extends JFrame {
         JLabel userLabel = new JLabel("Usuário: ");
         userLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         userInputField = createJTextField();
+        userInputField.setName("usernameField");
 
         userPanel.add(userLabel);
         userPanel.add(Box.createHorizontalStrut(10));
@@ -55,6 +59,7 @@ public class LoginFrame extends JFrame {
         JLabel passwordLabel = new JLabel("Senha:   ");
         passwordLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         passwordInputField = createJPasswordField();
+        passwordInputField.setName("passwordField");
 
         passwordPanel.add(passwordLabel);
         passwordPanel.add(Box.createHorizontalStrut(10));
@@ -67,13 +72,14 @@ public class LoginFrame extends JFrame {
         buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton loginButton = new JButton("Entrar");
+        loginButton.setName("Entrar");
         loginButton.setFont(new Font("Arial", Font.PLAIN, 16));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginButton.addActionListener(e -> {
             String username = userInputField.getText();
             String password = new String(passwordInputField.getPassword());
 
-            User usuario = UserController.authenticate(username, password);
+            User usuario = userController.authenticate(username, password);
 
             if (usuario == null) {
                 userInputField.setText("");
@@ -81,7 +87,7 @@ public class LoginFrame extends JFrame {
             }
             else {
                 dispose();
-                MainFrame main = new MainFrame(screenWidth, screenHeight, usuario);
+                MainFrame main = new MainFrame(screenWidth, screenHeight, usuario, userController);
                 main.setVisible(true);
             }
         });
@@ -94,7 +100,7 @@ public class LoginFrame extends JFrame {
 
         loginLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                new NewUserFrame(screenWidth, screenHeight);
+                new NewUserFrame(screenWidth, screenHeight, userController);
             }
 
             public void mouseEntered(MouseEvent e) {

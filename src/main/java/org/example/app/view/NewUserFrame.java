@@ -12,7 +12,7 @@ public class NewUserFrame extends JFrame {
     private User newUser;
     private String selectedImagePath = null;
 
-    public NewUserFrame(int screenWidth, int screenHeight) {
+    public NewUserFrame(int screenWidth, int screenHeight, UserController userController) {
         setTitle("Novo Usuário");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 400);
@@ -73,12 +73,12 @@ public class NewUserFrame extends JFrame {
 
             // constrói o User
 
-            if (UserController.userExists(name)) {
+            if (userController.userExists(name)) {
                 JOptionPane.showMessageDialog(this, "O nome de usuário \""+name+"\" já está em uso");
                 return;
             }
 
-            if (!UserController.createUser(name, password, selectedImagePath)) {
+            if (!userController.createUser(name, password, selectedImagePath)) {
                 JOptionPane.showMessageDialog(this, "Houve algum erro durante a criação do usuário. Tente novamente.");
                 return;
             }

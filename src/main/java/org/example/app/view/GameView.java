@@ -3,17 +3,18 @@ package org.example.app.view;
 import org.example.app.controllers.GameController;
 import org.example.app.models.Jumper;
 import org.example.app.models.JumperType;
+import org.example.app.models.User;
+import org.example.app.models.UserDAO;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.Graphics;
-import java.awt.Color;
-import java.awt.Toolkit;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.List;
+
 
 /**
 * Classe destinada à parte gráfica da aplicação
@@ -28,6 +29,10 @@ public class GameView extends JPanel implements ActionListener {
     private static int iteration = 0;
 
     private final GameController game;
+    private User currentUser;
+    private UserDAO userDAO = new UserDAO();
+    private JFrame frame;
+    private boolean gameOver = false;
 
     private BufferedImage backgroundImage;
     private BufferedImage aegislashSprite;
@@ -35,7 +40,13 @@ public class GameView extends JPanel implements ActionListener {
     private BufferedImage spoinkSprite;
     private BufferedImage spoinkRedSprite;
 
-    public GameView(GameController game) {
+    public GameView(GameController game, User user, JFrame frame) {
+        this.frame = frame;
+        this.currentUser = user;
+        user.setPartidas_totais(user.getPartidas_totais() + 1);
+
+        userDAO.update(user);
+
         // Setup panel
         setPreferredSize(new Dimension(800, 450));
         setBackground(Color.BLACK);
@@ -74,7 +85,32 @@ public class GameView extends JPanel implements ActionListener {
         iteration++;
         repaint();
 
+        if (!gameOver && checkWin()) {
+            currentUser.setPartidas_ganhas(currentUser.getPartidas_ganhas() + 1);
+            userDAO.update(currentUser);
+            JOptionPane.showMessageDialog(this, "Parabéns, você ganhou!!");
+            frame.dispose();
+            gameOver = true;
+            return;
+        }
+
         lastTick = currentTick;
+    }
+
+    public boolean checkWin() {
+        List<Jumper> jumpers =  game.getJumpers().toList();
+
+        if (jumpers.size() > 2) {
+            return false;
+        }
+
+        for (Jumper jumper : jumpers) {
+            if (jumper.type == JumperType.CLUSTER) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void drawJumper(Graphics g, Jumper jumper) {

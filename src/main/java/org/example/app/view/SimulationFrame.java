@@ -1,6 +1,7 @@
 package org.example.app.view;
 
 import org.example.app.controllers.GameController;
+import org.example.app.models.User;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
@@ -11,10 +12,12 @@ public class SimulationFrame {
 
     private final int screenWidth;
     private final int screenHeight;
+    private final User currentUser;
 
-    public SimulationFrame(int screenWidth, int screenHeight) {
+    public SimulationFrame(int screenWidth, int screenHeight, User currentUser) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+        this.currentUser = currentUser;
         showQuantityFrame();
     }
 
@@ -59,7 +62,7 @@ public class SimulationFrame {
         GameController game = new GameController();
         game.createJumpers(qtCreatures);
 
-        GameView gamePanel = new GameView(game);
+        GameView gamePanel = new GameView(game, currentUser, window);
         gamePanel.start();
         window.add(gamePanel);
 

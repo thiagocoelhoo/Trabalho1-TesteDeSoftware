@@ -2,6 +2,7 @@ package org.example.app.view;
 
 import org.example.app.controllers.UserController;
 import org.example.app.models.User;
+import org.example.app.models.UserDAO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -9,9 +10,20 @@ import java.util.List;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
+    private final UserController userController;
+    private final User currentUser;
 
-    public MainFrame(int screenWidth, int screenHeight, User currentUser) {
+    private int screenWidth;
+    private int screenHeight;
 
+    public MainFrame(int screenWidth, int screenHeight, User currentUser, UserController userController) {
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
+        this.userController = userController;
+        this.currentUser = currentUser;
+    }
+
+    public void init() {
         // configura janela
         setTitle("Jumping Creatures!");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -52,7 +64,7 @@ public class MainFrame extends JFrame {
         addUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         //TODO alterar conforme BD
         addUserButton.addActionListener(e -> {
-            new NewUserFrame(screenWidth, screenHeight);
+            new NewUserFrame(screenWidth, screenHeight, userController);
         });
 
         JButton removeUserButton = new JButton("Remover Usuário");
@@ -107,14 +119,14 @@ public class MainFrame extends JFrame {
         JButton simulateButton = new JButton("Nova Simulação");
         simulateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         simulateButton.addActionListener(e -> {
-            new SimulationFrame(screenWidth, screenHeight);
+            new SimulationFrame(screenWidth, screenHeight, currentUser);
         });
 
         // botão de log off
         JButton exitButton = new JButton("Sair");
         exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         exitButton.addActionListener(e -> {
-            LoginFrame loginFrame = new LoginFrame(screenWidth, screenHeight);
+            LoginFrame loginFrame = new LoginFrame(screenWidth, screenHeight, userController);
             loginFrame.setVisible(true);
             dispose();
         });
@@ -148,11 +160,15 @@ public class MainFrame extends JFrame {
             }
         };
 
-        List<User> users = UserController.getAllUsers();
+        List<User> users = userController.getAllUsers();
 
         for (User user : users) {
             // valores de simulação mocados
-            Object[] row = {user.getUsername(), 0, 0};
+            Object[] row = {
+                    user.getUsername(),
+                    user.getPartidas_totais(),
+                    user.getPartidas_ganhas()
+            };
             model.addRow(row);
         }
 
