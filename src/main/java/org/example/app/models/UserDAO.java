@@ -15,7 +15,8 @@ public class UserDAO {
                 CREATE TABLE IF NOT EXISTS users (
                     username VARCHAR(255) PRIMARY KEY,
                     password VARCHAR(255),
-                    score INT,
+                    partidas_totais INT,
+                    partidas_ganhas INT,
                     avatar VARCHAR(255)
                 )
             """);
@@ -26,11 +27,12 @@ public class UserDAO {
 
     public void insert(User user) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO users VALUES (?, ?, ?, ?)");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO users VALUES (?, ?, ?, ?, ?)");
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getPassword());
-            stmt.setInt(3, user.getScore());
-            stmt.setString(4, user.getAvatar());
+            stmt.setInt(3, user.getPartidas_totais());
+            stmt.setInt(4, user.getPartidas_ganhas());
+            stmt.setString(5, user.getAvatar());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -49,7 +51,8 @@ public class UserDAO {
                         rs.getString("password"),
                         rs.getString("avatar")
                 );
-                user.setScore(rs.getInt("score"));
+                user.setPartidas_totais(rs.getInt("partidas_totais"));
+                user.setPartidas_ganhas(rs.getInt("partidas_ganhas"));
                 return user;
             }
 
@@ -70,7 +73,8 @@ public class UserDAO {
                         rs.getString("password"),
                         rs.getString("avatar")
                 );
-                u.setScore(rs.getInt("score"));
+                u.setPartidas_totais(rs.getInt("partidas_totais"));
+                u.setPartidas_ganhas(rs.getInt("partidas_ganhas"));
                 list.add(u);
             }
         } catch (SQLException e) {
@@ -92,7 +96,8 @@ public class UserDAO {
                         rs.getString("password"),
                         rs.getString("avatar")
                 );
-                user.setScore(rs.getInt("score"));
+                user.setPartidas_totais(rs.getInt("partidas_totais"));
+                user.setPartidas_ganhas(rs.getInt("partidas_ganhas"));
                 users.add(user);
             }
         } catch (SQLException e) {
@@ -100,6 +105,21 @@ public class UserDAO {
         }
 
         return users;
+    }
+
+    public void update(User user) {
+        String sql = "UPDATE users SET password = ?, partidas_totais = ?, partidas_ganhas = ?, avatar = ? WHERE username = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getPassword());
+            stmt.setInt(2, user.getPartidas_totais());
+            stmt.setInt(3, user.getPartidas_ganhas());
+            stmt.setString(4, user.getAvatar());
+            stmt.setString(5, user.getUsername());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }
