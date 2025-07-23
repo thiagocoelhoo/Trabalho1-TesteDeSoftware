@@ -7,6 +7,8 @@ import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 
+//TODO retornar pontuações
+
 public class SimulationFrame {
 
     private final int screenWidth;

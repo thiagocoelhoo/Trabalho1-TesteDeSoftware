@@ -1,15 +1,27 @@
 package org.example.app.view;
 
 import org.example.app.models.User;
+import org.example.app.models.dao.UserManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
+
+//TODO botão de remover
+//TODO refresh das pontuações
 
 public class MainFrame extends JFrame {
+    private UserManager userManager;
+    private User currentUser;
+    private DefaultTableModel tableModel;
+    private JTable tab;
+    private JLabel totalSimLabel;
+    private JLabel mediaSimLabel;
 
-    public MainFrame(int screenWidth, int screenHeight, User currentUser) {
-
+    public MainFrame(int screenWidth, int screenHeight, User currentUser, UserManager userManager) {
+        this.userManager = userManager;
+        this.currentUser = currentUser;
         // configura janela
         setTitle("Jumping Creatures!");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,16 +40,15 @@ public class MainFrame extends JFrame {
         tablePanel.setMaximumSize(new Dimension(screenWidth, screenHeight / 2));
         tablePanel.setPreferredSize(new Dimension(screenWidth, screenHeight / 2));
 
-        JTable tab = getJTable();
+        tab = getJTable();
         JScrollPane scrollPane = new JScrollPane(tab);
         tablePanel.add(scrollPane);
 
         // textos da simulação
-        //TODO receber dados do BD
         JPanel simTextPanel = new JPanel();
         simTextPanel.setLayout(new BoxLayout(simTextPanel, BoxLayout.Y_AXIS));
-        JLabel totalSimLabel = new JLabel("Total de simulações: " + 1000000);
-        JLabel mediaSimLabel = new JLabel("Média de simulações: " + 53.6);
+        totalSimLabel = new JLabel("Total de simulações: " + userManager.getTotalSimulations());
+        mediaSimLabel = new JLabel("Média de simulações: " + userManager.getAverageSuccessfulSimulations());
         simTextPanel.add(totalSimLabel);
         simTextPanel.add(mediaSimLabel);
 
@@ -48,14 +59,23 @@ public class MainFrame extends JFrame {
 
         JButton addUserButton = new JButton("Adicionar Usuário");
         addUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        //TODO alterar conforme BD
         addUserButton.addActionListener(e -> {
-            new NewUserFrame(screenWidth, screenHeight);
+            NewUserFrame newUserFrame = new NewUserFrame(screenWidth, screenHeight, userManager);
+            newUserFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    refreshTable();
+                }
+
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    refreshTable();
+                }
+            });
         });
 
         JButton removeUserButton = new JButton("Remover Usuário");
         removeUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        //TODO alterar conforme BD
         removeUserButton.addActionListener(e -> {});
 
         tableButtonsPanel.add(addUserButton);
@@ -81,14 +101,45 @@ public class MainFrame extends JFrame {
 
         // panel da imagem
         JPanel userAvatarPanel = new JPanel();
-        //TODO carregar imagem com BD
+        String userAvatar = currentUser.getAvatar();
+        JLabel userAvatarLabel = new JLabel();
+        switch (userAvatar) {
+            case "guardian 1":
+                // imagem do avatar aegislash
+                ImageIcon img = new ImageIcon("src/main/java/org/example/app/resources/aegislash.png");
+                userAvatarLabel = new JLabel(img);
+                break;
+
+            case "guardian 2":
+                // imagem do regigigas
+                ImageIcon img2 = new ImageIcon("src/main/java/org/example/app/resources/regigigas.png");
+                userAvatarLabel = new JLabel(img2);
+                break;
+            case "creature 1":
+                // imagem do spoink
+                ImageIcon img3 = new ImageIcon("src/main/java/org/example/app/resources/spoink.png");
+                userAvatarLabel = new JLabel(img3);
+                break;
+            case "creature 2":
+                // imagem do spoink red
+                ImageIcon img4 = new ImageIcon("src/main/java/org/example/app/resources/spoink_red.png");
+                userAvatarLabel = new JLabel(img4);
+                break;
+            case "cluster":
+                // imagem do grumpig
+                ImageIcon img5 = new ImageIcon("src/main/java/org/example/app/resources/grumpig.png");
+                userAvatarLabel = new JLabel(img5);
+                break;
+
+        }
+        userAvatarPanel.add(userAvatarLabel);
 
         // panel de textos do usuário (nome e pontuação)
         JPanel userTextPanel = new JPanel();
         userTextPanel.setLayout(new BoxLayout(userTextPanel, BoxLayout.Y_AXIS));
 
         JLabel userNameLabel = new JLabel("Usuário: " + currentUser.getUsername());
-        JLabel userScoreLabel = new JLabel("Pontuação: " + 40000);
+        JLabel userScoreLabel = new JLabel("Pontuação: " + currentUser.getSuccesfulSimulations());
 
         userTextPanel.add(userNameLabel);
         userTextPanel.add(userScoreLabel);
@@ -112,7 +163,7 @@ public class MainFrame extends JFrame {
         JButton exitButton = new JButton("Sair");
         exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         exitButton.addActionListener(e -> {
-            LoginFrame loginFrame = new LoginFrame(screenWidth, screenHeight);
+            LoginFrame loginFrame = new LoginFrame(screenWidth, screenHeight, userManager);
             loginFrame.setVisible(true);
             dispose();
         });
@@ -136,40 +187,48 @@ public class MainFrame extends JFrame {
         add(mainPanel);
     }
 
-    //TODO mover para Controller quando funcional
-    private static JTable getJTable() {
+    private JTable getJTable() {
         String [] columnNames = {"Usuário", "Quantidade de Simulações", "Simulações Bem-Sucedidas"};
-        Object[][] data = {
-                {"alice", "12", "9"},
-                {"bob", "20", "15"},
-                {"carol", "8", "6"},
-                {"daniel", "17", "14"},
-                {"erika", "5", "4"},
-                {"fernando", "10", "7"},
-                {"gabriela", "14", "12"},
-                {"heitor", "9", "5"},
-                {"isabela", "13", "11"},
-                {"joao", "7", "6"},
-                {"heitor", "9", "5"},
-                {"isabela", "13", "11"},
-                {"joao", "7", "6"},
-                {"heitor", "9", "5"},
-                {"isabela", "13", "11"},
-                {"joao", "7", "6"}
-        };
+        ArrayList<User> databaseUsers = userManager.getAllUsers();
 
+        Object[][] userData = new Object[databaseUsers.size()][columnNames.length];
+        for (int i = 0; i < databaseUsers.size(); i++) {
+            User u = databaseUsers.get(i);
+            userData[i][0] = u.getUsername();
+            userData[i][1] = u.getSimulationCount();
+            userData[i][2] = u.getSuccesfulSimulations();
+
+        }
         // cria um modelo que impede as células de serem editadas
-        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+        tableModel = new DefaultTableModel(userData, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // bloqueia edição
             }
         };
 
-        JTable tab = new JTable(model);
+        tab = new JTable(tableModel);
         tab.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         tab.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tab.setEnabled(true); // permite seleção
         return tab;
+    }
+
+    private void refreshTable() {
+        // Limpa o modelo
+        tableModel.setRowCount(0);
+
+        // Pega os dados atualizados do banco
+        ArrayList<User> databaseUsers = userManager.getAllUsers();
+
+        // Adiciona os dados no modelo
+        for (User u : databaseUsers) {
+            Object[] row = {
+                    u.getUsername(),
+                    u.getSimulationCount(),
+                    u.getSuccesfulSimulations()
+            };
+            tableModel.addRow(row);
+        }
     }
 }

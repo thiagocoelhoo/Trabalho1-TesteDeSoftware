@@ -1,17 +1,20 @@
 package org.example.app.view;
 
 import org.example.app.models.User;
+import org.example.app.models.dao.UserManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
+//TODO combobox visualmente ajustada
+
 public class NewUserFrame extends JFrame {
+    private UserManager userManager;
 
-    private User newUser;
-    private String selectedImagePath = null;
+    public NewUserFrame(int screenWidth, int screenHeight, UserManager userManager) {
+        this.userManager = userManager;
 
-    public NewUserFrame(int screenWidth, int screenHeight) {
         setTitle("Novo Usuário");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 400);
@@ -42,21 +45,12 @@ public class NewUserFrame extends JFrame {
         passwordField.setMaximumSize(new Dimension(200, 30));
         passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // imagem
-        JLabel imageLabel = new JLabel("Avatar:");
-        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JButton selectImageButton = new JButton("Selecionar Imagem");
-        selectImageButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        selectImageButton.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            int option = fileChooser.showOpenDialog(this);
-            if(option == JFileChooser.APPROVE_OPTION){
-                File selectedFile = fileChooser.getSelectedFile();
-                selectedImagePath = selectedFile.getAbsolutePath();
-                JOptionPane.showMessageDialog(this, "Imagem selecionada: " + selectedFile.getName());
-            }
-        });
+        // avatar
+        JLabel avatarLabel = new JLabel("Avatar:");
+        avatarLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        String[] avatarOptions = {"guardian 1", "guardian 2", "creature 1", "creature 2", "cluster"};
+        JComboBox avatarComboBox = new JComboBox(avatarOptions);
+        avatarComboBox.setSelectedItem("guardian 1");
 
         // botão de criar usuário
         JButton createButton = new JButton("Criar");
@@ -65,15 +59,14 @@ public class NewUserFrame extends JFrame {
             String name = nameField.getText();
             String password = new String(passwordField.getPassword());
 
-            if (name.isEmpty() || password.isEmpty() || selectedImagePath == null) {
+            if (name.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Preencha todos os campos e selecione uma imagem.");
                 return;
             }
 
-            // constrói o User
-            newUser = new User(name, password, selectedImagePath);
+            // constrói o usuario
+            userManager.createUser(name, password, avatarComboBox.getSelectedItem().toString());
 
-            // aqui você poderia salvar o user em um banco, arquivo, etc
             JOptionPane.showMessageDialog(this, "Usuário criado com sucesso!");
             dispose();
         });
@@ -87,8 +80,8 @@ public class NewUserFrame extends JFrame {
         mainPanel.add(passwordLabel);
         mainPanel.add(passwordField);
         mainPanel.add(Box.createVerticalStrut(10));
-        mainPanel.add(imageLabel);
-        mainPanel.add(selectImageButton);
+        mainPanel.add(avatarLabel);
+        mainPanel.add(avatarComboBox);
         mainPanel.add(Box.createVerticalStrut(20));
         mainPanel.add(createButton);
 

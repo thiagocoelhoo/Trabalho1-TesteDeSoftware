@@ -42,11 +42,11 @@ public class GameView extends JPanel implements ActionListener {
 
         // Load resources
         try {
-            backgroundImage = ImageIO.read(new File("background.png"));
-            aegislashSprite = ImageIO.read(new File("aegislash.png"));
-            grumpigSprite = ImageIO.read(new File("grumpig.png"));
-            spoinkSprite = ImageIO.read(new File("spoink.png"));
-            spoinkRedSprite = ImageIO.read(new File("spoink_red.png"));
+            backgroundImage = ImageIO.read(new File("src/main/java/org/example/app/resources/background.png"));
+            aegislashSprite = ImageIO.read(new File("src/main/java/org/example/app/resources/aegislash.png"));
+            grumpigSprite = ImageIO.read(new File("src/main/java/org/example/app/resources/grumpig.png"));
+            spoinkSprite = ImageIO.read(new File("src/main/java/org/example/app/resources/spoink.png"));
+            spoinkRedSprite = ImageIO.read(new File("src/main/java/org/example/app/resources/spoink_red.png"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

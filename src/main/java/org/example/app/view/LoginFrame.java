@@ -1,19 +1,25 @@
 package org.example.app.view;
 
 import org.example.app.models.User;
+import org.example.app.models.dao.UserManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
+
+//TODO password.getText é deprecated
 
 public class LoginFrame extends JFrame {
 
     private final JTextField userInputField;
     private final JPasswordField passwordInputField;
+    private UserManager userManager;
 
-    public LoginFrame(int screenWidth, int screenHeight) {
+    public LoginFrame(int screenWidth, int screenHeight, UserManager userManager) {
         // configura a janela
+        this.userManager = userManager;
         setTitle("Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 400);
@@ -69,10 +75,18 @@ public class LoginFrame extends JFrame {
         loginButton.setFont(new Font("Arial", Font.PLAIN, 16));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginButton.addActionListener(e -> {
-            User usuario = new User(userInputField.getText(), new String(passwordInputField.getPassword()), null);
-            dispose();
-            MainFrame main = new MainFrame(screenWidth, screenHeight, usuario);
-            main.setVisible(true);
+            String username = userInputField.getText();
+            String password = passwordInputField.getText();
+
+            if (userManager.checkPassword(username, password)) {
+                User currUser = userManager.getUser(username, password);
+                this.dispose();
+                MainFrame main = new MainFrame(screenWidth, screenHeight, currUser, userManager);
+                main.setVisible(true);
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos!");
+            }
         });
 
         buttonPanel.add(loginButton);
@@ -83,7 +97,7 @@ public class LoginFrame extends JFrame {
 
         loginLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                new NewUserFrame(screenWidth, screenHeight);
+                new NewUserFrame(screenWidth, screenHeight, userManager);
             }
 
             public void mouseEntered(MouseEvent e) {
