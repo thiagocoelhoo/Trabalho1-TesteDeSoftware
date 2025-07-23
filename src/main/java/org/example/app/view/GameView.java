@@ -16,7 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 /**
-* Classe destinada à parte gráfica da aplicação
+* Classe destinada à parte gráfica da simulação
 */
 public class GameView extends JPanel implements ActionListener {
     private int frameInterval = 1; // Interval in milliseconds
@@ -70,7 +70,10 @@ public class GameView extends JPanel implements ActionListener {
         double deltaTime = (currentTick - lastTick) / 1e9;
 
         game.update(deltaTime * simulationSpeed);
-
+        if (game.getSimulationState()){
+            JOptionPane.showMessageDialog(this, "Simulação bem sucedida!");
+            // mandar algo para o frame de simulação?
+        }
         iteration++;
         repaint();
 

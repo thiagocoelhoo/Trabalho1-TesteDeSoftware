@@ -1,13 +1,11 @@
 package org.example.app.view;
 
-import org.example.app.models.User;
 import org.example.app.models.dao.UserManager;
-
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-//TODO combobox visualmente ajustada
 
 public class NewUserFrame extends JFrame {
     private UserManager userManager;
@@ -50,25 +48,44 @@ public class NewUserFrame extends JFrame {
         avatarLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         String[] avatarOptions = {"guardian 1", "guardian 2", "creature 1", "creature 2", "cluster"};
         JComboBox avatarComboBox = new JComboBox(avatarOptions);
+        avatarComboBox.setMaximumSize(new Dimension(200, 30));
         avatarComboBox.setSelectedItem("guardian 1");
 
         // botão de criar usuário
         JButton createButton = new JButton("Criar");
         createButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         createButton.addActionListener(e -> {
             String name = nameField.getText();
             String password = new String(passwordField.getPassword());
 
             if (name.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Preencha todos os campos e selecione uma imagem.");
+                JOptionPane.showMessageDialog(this,
+                        "Preencha todos os campos e selecione uma imagem.");
                 return;
             }
 
             // constrói o usuario
-            userManager.createUser(name, password, avatarComboBox.getSelectedItem().toString());
+            int result = userManager.createUser(name, password, avatarComboBox.getSelectedItem().toString());
 
-            JOptionPane.showMessageDialog(this, "Usuário criado com sucesso!");
-            dispose();
+            if (result > 0 ){
+                JOptionPane.showMessageDialog(this, "Usuário criado com sucesso!");
+                dispose();
+            }
+            else{
+                JOptionPane.showMessageDialog(this,
+                        "Erro de inclusão: o nome de usuário '" + name + "' já existe.");
+                nameField.setText("");
+            }
+
+        });
+
+        createButton.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    createButton.doClick();
+                }
+            }
         });
 
         // adiciona tudo ao painel

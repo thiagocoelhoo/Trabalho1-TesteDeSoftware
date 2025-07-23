@@ -13,8 +13,9 @@ import java.util.ArrayList;
 
 public class UserManager {
 
-    public void createUser(String username, String password, String avatar){
+    public int createUser(String username, String password, String avatar){
         String sql = "INSERT INTO users (username, password, avatar) values (?,?,?)";
+        int result = 0;
         try (Connection conn = DbManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(sql)){
             statement.setString(1, username);
@@ -23,6 +24,7 @@ public class UserManager {
             statement.executeUpdate();
             System.out.println("User created with username " + username + " and password "
                                + password + " and avatar " + avatar);
+            result = 1;
 
         } catch (SQLException e){
             if (e.getErrorCode() == 23505) {
@@ -32,7 +34,9 @@ public class UserManager {
                 e.printStackTrace();
             }
         }
+        return result;
     }
+
     public boolean checkPassword(String username, String password){
         String sql = "SELECT password FROM users WHERE username = ?";
         try (Connection conn = DbManager.getConnection();
@@ -50,6 +54,7 @@ public class UserManager {
         }
         return false;
     }
+
     public User getUser(String username, String password){
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
         User user = null;
@@ -76,6 +81,7 @@ public class UserManager {
 
         return user;
     }
+
     public ArrayList<User> getAllUsers(){
         ArrayList<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users ORDER BY succesfulSimulations DESC";
@@ -100,6 +106,7 @@ public class UserManager {
 
         return users;
     }
+
     public int getTotalSimulations(){
         String sql = "SELECT SUM(simulationCount) AS totalSims FROM users";
         int total = 0;
@@ -118,6 +125,7 @@ public class UserManager {
 
         return total;
     }
+
     public double getAverageSuccessfulSimulations(){
         String sql = "SELECT AVG(succesfulSimulations) AS avgSims FROM users";
         double average = 0;
@@ -135,5 +143,23 @@ public class UserManager {
         }
 
         return average;
+    }
+
+    public void removeUser(String username){
+        String sql = "DELETE FROM users WHERE username = ?";
+        try (Connection conn = DbManager.getConnection();
+        PreparedStatement statement = conn.prepareStatement(sql)){
+
+            statement.setString(1, username);
+            if (statement.executeUpdate() > 0){
+                System.out.println("Usuário " + username + " removido com sucesso.");
+
+            }
+        } catch (SQLException e){
+            System.err.println("Erro ao executar SQL: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+
     }
 }

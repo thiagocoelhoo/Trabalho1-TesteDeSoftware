@@ -66,6 +66,9 @@ public class User {
         this.succesfulSimulations = succesfulSimulations;
     }
 
+    public int getId() {
+        return id;
+    }
     public String toString() {
         return "Usuario{" + "id=" + id + ", login='" + username + '\'' + ", pontuacao=" + succesfulSimulations +
                 ", simulacoesExecutadas=" + simulationCount + '}';

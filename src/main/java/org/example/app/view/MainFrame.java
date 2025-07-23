@@ -4,12 +4,12 @@ import org.example.app.models.User;
 import org.example.app.models.dao.UserManager;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 
-//TODO botão de remover
-//TODO refresh das pontuações
+//TODO refresh das pontuações ao adicionar e ao simular
 
 public class MainFrame extends JFrame {
     private UserManager userManager;
@@ -52,11 +52,12 @@ public class MainFrame extends JFrame {
         simTextPanel.add(totalSimLabel);
         simTextPanel.add(mediaSimLabel);
 
-        // botões de inserir e remover usuários
+        // botões de adicionar e remover usuários
         JPanel tableButtonsPanel = new JPanel();
         tableButtonsPanel.setLayout(new BoxLayout(tableButtonsPanel, BoxLayout.Y_AXIS));
         tableButtonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // botão adicionar usuario
         JButton addUserButton = new JButton("Adicionar Usuário");
         addUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         addUserButton.addActionListener(e -> {
@@ -64,19 +65,29 @@ public class MainFrame extends JFrame {
             newUserFrame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent e) {
-                    refreshTable();
+                    refreshPage();
                 }
 
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
-                    refreshTable();
+                    refreshPage();
                 }
             });
         });
 
+        // botão remover usuario
         JButton removeUserButton = new JButton("Remover Usuário");
         removeUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        removeUserButton.addActionListener(e -> {});
+
+        removeUserButton.addActionListener(e -> {
+            String selectedUser = tab.getModel().getValueAt(tab.getSelectedRow(), 0).toString();
+            if (selectedUser.equals(currentUser.getUsername())){
+                JOptionPane.showMessageDialog(this, "Usuário não pode se remover!");
+                return;
+            }
+            userManager.removeUser(selectedUser);
+            refreshPage();
+        });
 
         tableButtonsPanel.add(addUserButton);
         tableButtonsPanel.add(Box.createVerticalStrut(5));
@@ -101,6 +112,8 @@ public class MainFrame extends JFrame {
 
         // panel da imagem
         JPanel userAvatarPanel = new JPanel();
+        Border avatarBorder = BorderFactory.createLineBorder(Color.black);
+        userAvatarPanel.setBorder(avatarBorder);
         String userAvatar = currentUser.getAvatar();
         JLabel userAvatarLabel = new JLabel();
         switch (userAvatar) {
@@ -156,7 +169,8 @@ public class MainFrame extends JFrame {
         JButton simulateButton = new JButton("Nova Simulação");
         simulateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         simulateButton.addActionListener(e -> {
-            new SimulationFrame(screenWidth, screenHeight);
+            SimulationFrame sim = new SimulationFrame(screenWidth, screenHeight);
+            //sim.gamePanel.
         });
 
         // botão de log off
@@ -214,7 +228,12 @@ public class MainFrame extends JFrame {
         return tab;
     }
 
-    private void refreshTable() {
+    private void refreshPage() {
+        // * labels de pontuação global *
+
+
+
+        // ** tabela **
         // Limpa o modelo
         tableModel.setRowCount(0);
 

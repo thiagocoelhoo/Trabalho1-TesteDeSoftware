@@ -13,6 +13,8 @@ public class SimulationFrame {
 
     private final int screenWidth;
     private final int screenHeight;
+    GameController game;
+    GameView gamePanel;
 
     public SimulationFrame(int screenWidth, int screenHeight) {
         this.screenWidth = screenWidth;
@@ -58,10 +60,11 @@ public class SimulationFrame {
         JFrame window = new JFrame("Jumping Creatures");
         window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        GameController game = new GameController();
+        game = new GameController();
         game.createJumpers(qtCreatures);
 
-        GameView gamePanel = new GameView(game);
+        gamePanel = new GameView(game);
+        //gamePanel.addWindowListener
         gamePanel.start();
         window.add(gamePanel);
 
@@ -86,18 +89,6 @@ public class SimulationFrame {
         int windowY = (screenHeight / 2) - (h / 2);
         qtWindow.setLocation(windowX, windowY);
         return qtWindow;
-    }
-
-    private JTextField createJTextField(boolean user) {
-        JTextField textField = new JTextField();
-        textField.setMaximumSize(new Dimension(200, 30));
-        textField.setPreferredSize(new Dimension(200, 30));
-        if (!user) {
-            textField = new JPasswordField();
-            textField.setMaximumSize(new Dimension(200, 30));
-            textField.setPreferredSize(new Dimension(200, 30));
-        }
-        return textField;
     }
 
     private JSpinner getSpinner() {

@@ -5,11 +5,14 @@ import org.example.app.models.dao.UserManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 
 //TODO password.getText é deprecated
+// gera erros de leitura do campo para objeto currUser
+// ex: '123' vira ['1', '2', '3']
 
 public class LoginFrame extends JFrame {
 
@@ -74,6 +77,7 @@ public class LoginFrame extends JFrame {
         JButton loginButton = new JButton("Entrar");
         loginButton.setFont(new Font("Arial", Font.PLAIN, 16));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         loginButton.addActionListener(e -> {
             String username = userInputField.getText();
             String password = passwordInputField.getText();
@@ -86,6 +90,15 @@ public class LoginFrame extends JFrame {
             }
             else{
                 JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos!");
+            }
+        });
+
+        loginButton.addKeyListener(new KeyAdapter(){
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    System.out.println("Enter");
+                    loginButton.doClick();
+                }
             }
         });
 
