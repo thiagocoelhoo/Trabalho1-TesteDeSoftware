@@ -24,8 +24,12 @@ public class GameController {
 
     }
 
-    public boolean getSimulationState(){
+    public boolean isSimulationFinished() {
         return finishSimulation;
+    }
+
+    public void finishSimulation() {
+        finishSimulation = true;
     }
 
     public CircularLinkedList<Jumper> getJumpers() {
@@ -83,6 +87,7 @@ public class GameController {
         return nearestJumper;
     }
 
+    // condição de parada aqui?
     public void handleCurrentJumper() {
         if (currentJumper == null) {
             selectNextJumper();
@@ -96,9 +101,10 @@ public class GameController {
 
         // condição de parada aqui?
         if (jumpers.size() < 3){
-            if (jumpers.get(0).type != JumperType.CLUSTER) {
+            if (jumpers.get(0).type != JumperType.CLUSTER){
                 finishSimulation();
             }
+
         }
     }
 
@@ -177,9 +183,5 @@ public class GameController {
         }
         handleCurrentJumper();
         updateJumpersPhysics(deltaTime);
-    }
-
-    public void finishSimulation() {
-        finishSimulation = true;
     }
 }

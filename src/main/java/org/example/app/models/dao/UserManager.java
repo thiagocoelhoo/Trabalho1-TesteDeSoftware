@@ -8,9 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-//TODO remoção de usuários
-//TODO atualização de pontuação
-
 public class UserManager {
 
     public int createUser(String username, String password, String avatar){
@@ -22,8 +19,6 @@ public class UserManager {
             statement.setString(2, password);
             statement.setString(3, avatar);
             statement.executeUpdate();
-            System.out.println("User created with username " + username + " and password "
-                               + password + " and avatar " + avatar);
             result = 1;
 
         } catch (SQLException e){
@@ -151,15 +146,56 @@ public class UserManager {
         PreparedStatement statement = conn.prepareStatement(sql)){
 
             statement.setString(1, username);
-            if (statement.executeUpdate() > 0){
-                System.out.println("Usuário " + username + " removido com sucesso.");
+            statement.executeUpdate();
+            System.out.println("Usuário " + username + " removido com sucesso.");
 
+        } catch (SQLException e){
+            System.err.println("Erro ao executar SQL: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public int getUserSuccessfulSimulations(String username){
+        String sql = "SELECT succesfulSimulations FROM users WHERE username = ?";
+        int successful = 0;
+
+        try (Connection conn = DbManager.getConnection();
+        PreparedStatement statement = conn.prepareStatement(sql)){
+            statement.setString(1, username);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()){
+                successful = rs.getInt("succesfulSimulations");
             }
         } catch (SQLException e){
             System.err.println("Erro ao executar SQL: " + e.getMessage());
             e.printStackTrace();
         }
 
+        return successful;
+    }
 
+    public void incrementSimCount(String username){
+        String sql = "UPDATE users SET simulationCount = simulationCount + 1 WHERE username = ?";
+        try (Connection conn = DbManager.getConnection();
+        PreparedStatement statement = conn.prepareStatement(sql)){
+
+            statement.setString(1, username);
+            statement.executeUpdate();
+
+        } catch (SQLException e){
+            System.err.println("Erro ao executar SQL: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public void incrementSuccessfulSimulations(String username){
+        String sql = "UPDATE users SET succesfulSimulations = succesfulSimulations + 1 WHERE username = ?";
+        try (Connection conn = DbManager.getConnection();
+        PreparedStatement statement = conn.prepareStatement(sql)){
+            statement.setString(1,username);
+            statement.executeUpdate();
+        } catch (SQLException e){
+            System.err.println("Erro ao executar SQL: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

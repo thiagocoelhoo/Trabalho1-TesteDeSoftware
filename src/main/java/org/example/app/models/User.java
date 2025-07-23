@@ -62,7 +62,7 @@ public class User {
     public int getSuccesfulSimulations() {
         return succesfulSimulations;
     }
-    public void setSuccesfulSimulations(int succesfulSimulations) {
+    public void setSuccessfulSimulations(int succesfulSimulations) {
         this.succesfulSimulations = succesfulSimulations;
     }
 

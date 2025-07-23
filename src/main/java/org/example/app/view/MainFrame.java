@@ -9,8 +9,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 
-//TODO refresh das pontuações ao adicionar e ao simular
-
 public class MainFrame extends JFrame {
     private UserManager userManager;
     private User currentUser;
@@ -18,10 +16,11 @@ public class MainFrame extends JFrame {
     private JTable tab;
     private JLabel totalSimLabel;
     private JLabel mediaSimLabel;
+    private JLabel userScoreLabel;
 
-    public MainFrame(int screenWidth, int screenHeight, User currentUser, UserManager userManager) {
+    public MainFrame(int screenWidth, int screenHeight, User currUser, UserManager userManager) {
         this.userManager = userManager;
-        this.currentUser = currentUser;
+        this.currentUser = currUser;
         // configura janela
         setTitle("Jumping Creatures!");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -152,7 +151,7 @@ public class MainFrame extends JFrame {
         userTextPanel.setLayout(new BoxLayout(userTextPanel, BoxLayout.Y_AXIS));
 
         JLabel userNameLabel = new JLabel("Usuário: " + currentUser.getUsername());
-        JLabel userScoreLabel = new JLabel("Pontuação: " + currentUser.getSuccesfulSimulations());
+        userScoreLabel = new JLabel("Pontuação: " + currentUser.getSuccesfulSimulations());
 
         userTextPanel.add(userNameLabel);
         userTextPanel.add(userScoreLabel);
@@ -169,8 +168,8 @@ public class MainFrame extends JFrame {
         JButton simulateButton = new JButton("Nova Simulação");
         simulateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         simulateButton.addActionListener(e -> {
-            SimulationFrame sim = new SimulationFrame(screenWidth, screenHeight);
-            //sim.gamePanel.
+            userManager.incrementSimCount(currentUser.getUsername());
+            SimulationFrame sim = new SimulationFrame(screenWidth, screenHeight, currUser.getUsername(), userManager, this::refreshPage);
         });
 
         // botão de log off
@@ -229,11 +228,9 @@ public class MainFrame extends JFrame {
     }
 
     private void refreshPage() {
-        // * labels de pontuação global *
+        System.out.println("Refresh page");
 
-
-
-        // ** tabela **
+        // * tabela *
         // Limpa o modelo
         tableModel.setRowCount(0);
 
@@ -249,5 +246,12 @@ public class MainFrame extends JFrame {
             };
             tableModel.addRow(row);
         }
+
+        // ** labels de pontuação global **
+        totalSimLabel.setText("Total de simulações: " + userManager.getTotalSimulations());
+        mediaSimLabel.setText("Média de simulações: " + userManager.getAverageSuccessfulSimulations());
+
+        // *** label de pontuação de usuário ***
+        userScoreLabel.setText("Pontuação " + userManager.getUserSuccessfulSimulations(currentUser.getUsername()));
     }
 }

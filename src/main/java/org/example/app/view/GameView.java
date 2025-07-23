@@ -24,7 +24,6 @@ public class GameView extends JPanel implements ActionListener {
     private Timer timer;
     private long lastTick = 0;
 
-    private final int MAX_ITERATIONS = 2_000;
     private static int iteration = 0;
 
     private final GameController game;
@@ -70,14 +69,15 @@ public class GameView extends JPanel implements ActionListener {
         double deltaTime = (currentTick - lastTick) / 1e9;
 
         game.update(deltaTime * simulationSpeed);
-        if (game.getSimulationState()){
-            JOptionPane.showMessageDialog(this, "Simulação bem sucedida!");
-            // mandar algo para o frame de simulação?
+        if (game.isSimulationFinished()){
+            this.setVisible(false);
         }
-        iteration++;
-        repaint();
+        else{
+            iteration++;
+            repaint();
 
-        lastTick = currentTick;
+            lastTick = currentTick;
+        }
     }
 
     public void drawJumper(Graphics g, Jumper jumper) {
