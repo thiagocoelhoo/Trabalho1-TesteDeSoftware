@@ -10,9 +10,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-//TODO password.getText é deprecated
-// gera erros de leitura do campo para objeto currUser
-// ex: '123' vira ['1', '2', '3']
 
 public class LoginFrame extends JFrame {
 
@@ -80,7 +77,7 @@ public class LoginFrame extends JFrame {
 
         loginButton.addActionListener(e -> {
             String username = userInputField.getText();
-            String password = passwordInputField.getText();
+            String password = new String(passwordInputField.getPassword());
 
             if (userManager.checkPassword(username, password)) {
                 User currUser = userManager.getUser(username, password);

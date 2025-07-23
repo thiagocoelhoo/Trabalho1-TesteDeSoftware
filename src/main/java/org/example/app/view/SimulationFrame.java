@@ -12,7 +12,6 @@ import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-//TODO verificar se a simulação realmente termina
 
 public class SimulationFrame {
 
