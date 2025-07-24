@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+// classe referente à parte gráfica da tela de adicionar novo usuário
 public class NewUserFrame extends JFrame {
     private UserService userService;
 
@@ -44,7 +45,7 @@ public class NewUserFrame extends JFrame {
         passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPasswordField passwordField = new JPasswordField();
-        passwordField.setName("passwordField"); // <--- Adicionando nome
+        passwordField.setName("passwordField"); // Adicionando nome
         passwordField.setMaximumSize(new Dimension(200, 30));
         passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -53,15 +54,16 @@ public class NewUserFrame extends JFrame {
         avatarLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         String[] avatarOptions = {"guardian 1", "guardian 2", "creature 1", "creature 2", "cluster"};
         JComboBox avatarComboBox = new JComboBox(avatarOptions);
-        avatarComboBox.setName("avatarComboBox"); // <--- Adicionando nome
+        avatarComboBox.setName("avatarComboBox"); // Adicionando nome
         avatarComboBox.setMaximumSize(new Dimension(200, 30));
         avatarComboBox.setSelectedItem("guardian 1");
 
         // botão de criar usuário
         JButton createButton = new JButton("Criar");
-        createButton.setName("createButton"); // <--- Adicionando nome
+        createButton.setName("createButton"); // Adicionando nome
         createButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // tenta criar usuário no sistema
         createButton.addActionListener(e -> {
             String name = nameField.getText();
             String password = new String(passwordField.getPassword());
@@ -84,6 +86,7 @@ public class NewUserFrame extends JFrame {
             }
         });
 
+        // procura o pressionar da tecla 'enter' para ativar botão
         createButton.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {

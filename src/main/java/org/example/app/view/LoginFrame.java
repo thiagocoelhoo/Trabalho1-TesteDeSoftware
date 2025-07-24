@@ -10,14 +10,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-
+// classe referente à parte gráfica do login
 public class LoginFrame extends JFrame {
     private JTextField userInputField;
     private JPasswordField passwordInputField;
 
     private UserService userService;
-    private int windowWidth;
-    private int windowHeight;
+    private final int windowWidth;
+    private final int windowHeight;
 
     public LoginFrame(int windowWidth, int windowHeight, UserService userService) {
         this.userService = userService;
@@ -87,11 +87,13 @@ public class LoginFrame extends JFrame {
         loginButton.setFont(new Font("Arial", Font.PLAIN, 16));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // verifica credenciais login
         loginButton.addActionListener(e -> {
             String username = userInputField.getText();
             String password = new String(passwordInputField.getPassword());
             boolean auth = userService.authenticate(username, password);
 
+            // se senha correta para tal nome de usuário
             if (auth) {
                 dispose();
                 User usuario = userService.getUser(username);
@@ -105,6 +107,7 @@ public class LoginFrame extends JFrame {
             }
         });
 
+        // permite que o botão seja pressionado ao selecioná-lo (com tecla TAB) e apertar enter
         loginButton.addKeyListener(new KeyAdapter(){
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -120,11 +123,14 @@ public class LoginFrame extends JFrame {
         JLabel loginLabel = new JLabel("Novo usuário?");
         loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // eventos de mouse na label de novo usuário
         loginLabel.addMouseListener(new MouseAdapter() {
+            // gera janela de adicionar novo usuário
             public void mouseClicked(MouseEvent e) {
                 new NewUserFrame(windowWidth, windowHeight, userService);
             }
 
+            // muda cursor ao 'hoverar' label de novo usuário
             public void mouseEntered(MouseEvent e) {
                 loginLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }

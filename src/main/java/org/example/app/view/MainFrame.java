@@ -9,6 +9,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
+// classe referente à parte gráfica central do sistema
 public class MainFrame extends JFrame {
     private UserService userService;
     private User currentUser;
@@ -17,8 +18,8 @@ public class MainFrame extends JFrame {
     private JLabel totalSimLabel;
     private JLabel mediaSimLabel;
     private JLabel userScoreLabel;
-    private int screenWidth;
-    private int screenHeight;
+    private final int screenWidth;
+    private final int screenHeight;
 
     public MainFrame(int screenWidth, int screenHeight, User currUser, UserService userService) {
         this.userService = userService;
@@ -36,7 +37,7 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // painel principal
+        // painel principal que engloba o resto da página
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -48,18 +49,18 @@ public class MainFrame extends JFrame {
         tablePanel.setPreferredSize(new Dimension(screenWidth, screenHeight / 2));
 
         tab = getJTable();
-        tab.setName("usersTable"); // <--- Nome para a tabela
+        tab.setName("usersTable"); //  Nome para a tabela
         JScrollPane scrollPane = new JScrollPane(tab);
-        scrollPane.setName("usersTableScrollPane"); // <--- Nome para o scroll pane
+        scrollPane.setName("usersTableScrollPane"); // Nome para o scroll pane
         tablePanel.add(scrollPane);
 
         // textos da simulação
         JPanel simTextPanel = new JPanel();
         simTextPanel.setLayout(new BoxLayout(simTextPanel, BoxLayout.Y_AXIS));
         totalSimLabel = new JLabel("Total de simulações: " + userService.getTotalSimulations());
-        totalSimLabel.setName("totalSimulationsLabel"); // <--- Nome para o label
+        totalSimLabel.setName("totalSimulationsLabel"); //  Nome para o label
         mediaSimLabel = new JLabel("Média de simulações ganhas: " + userService.getAverageWins());
-        mediaSimLabel.setName("averageWinsLabel"); // <--- Nome para o label
+        mediaSimLabel.setName("averageWinsLabel"); //  Nome para o label
         simTextPanel.add(totalSimLabel);
         simTextPanel.add(mediaSimLabel);
 
@@ -68,12 +69,14 @@ public class MainFrame extends JFrame {
         tableButtonsPanel.setLayout(new BoxLayout(tableButtonsPanel, BoxLayout.Y_AXIS));
         tableButtonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // botão adicionar usuario
+        // adicionar usuario
         JButton addUserButton = new JButton("Adicionar Usuário");
-        addUserButton.setName("addUserButton"); // <--- Nome para o botão
+        addUserButton.setName("addUserButton"); // Nome para o botão
         addUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         addUserButton.addActionListener(e -> {
             NewUserFrame newUserFrame = new NewUserFrame(screenWidth, screenHeight, userService);
+
+            // reinicia as informações da página Main após utilizar a página de novo usuário
             newUserFrame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent e) {
@@ -88,19 +91,23 @@ public class MainFrame extends JFrame {
             newUserFrame.setVisible(true); // Garante que a nova janela seja visível
         });
 
-        // botão remover usuario
+        // remover usuario
         JButton removeUserButton = new JButton("Remover Usuário");
-        removeUserButton.setName("removeUserButton"); // <--- Nome para o botão
+        removeUserButton.setName("removeUserButton"); // Nome para o botão
         removeUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // verifica qual linha da tabela está selecionada e tenta remoção do usuário
         removeUserButton.addActionListener(e -> {
             int selectedRow = tab.getSelectedRow();
+
+            // não permite remoção sem seleção prévia
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, "Selecione um usuário para remover.");
                 return;
             }
             String selectedUser = tab.getModel().getValueAt(selectedRow, 0).toString();
 
+            // bloqueia remoção de usuário atual
             if (selectedUser.equals(currentUser.getUsername())){
                 JOptionPane.showMessageDialog(this, "Usuário não pode se remover!");
                 return;
@@ -121,7 +128,7 @@ public class MainFrame extends JFrame {
         simOptionsPanel.add(tableButtonsPanel);
 
         JSeparator horizontalSeparator = new JSeparator(SwingConstants.HORIZONTAL);
-        horizontalSeparator.setName("mainSeparator"); // <--- Nome para o separador
+        horizontalSeparator.setName("mainSeparator"); //  Nome para o separador
 
         // panel da área do usuário
         JPanel userPanel = new JPanel();
@@ -133,12 +140,14 @@ public class MainFrame extends JFrame {
 
         // panel da imagem
         JPanel userAvatarPanel = new JPanel();
-        userAvatarPanel.setName("userAvatarPanel"); // <--- Nome para o painel do avatar
+        userAvatarPanel.setName("userAvatarPanel"); // Nome para o painel do avatar
         Border avatarBorder = BorderFactory.createLineBorder(Color.black);
         userAvatarPanel.setBorder(avatarBorder);
         String userAvatar = currentUser.getAvatar();
         JLabel userAvatarLabel = new JLabel();
-        userAvatarLabel.setName("userAvatarLabel"); // <--- Nome para o label da imagem do avatar
+        userAvatarLabel.setName("userAvatarLabel"); // Nome para o label da imagem do avatar
+
+        // verifica qual imagem deve ser utilizada para representar o usuário
         switch (userAvatar) {
             case "guardian 1":
                 ImageIcon img = new ImageIcon(getClass().getResource("/org/example/app/resources/aegislash.png"));
@@ -166,13 +175,13 @@ public class MainFrame extends JFrame {
 
         // panel de textos do usuário (nome e pontuação)
         JPanel userTextPanel = new JPanel();
-        userTextPanel.setName("userTextPanel"); // <--- Nome para o painel de texto do usuário
+        userTextPanel.setName("userTextPanel"); // Nome para o painel de texto do usuário
         userTextPanel.setLayout(new BoxLayout(userTextPanel, BoxLayout.Y_AXIS));
 
         JLabel userNameLabel = new JLabel("Usuário: " + currentUser.getUsername());
-        userNameLabel.setName("userNameLabel"); // <--- Nome para o label do nome do usuário
+        userNameLabel.setName("userNameLabel"); // Nome para o label do nome do usuário
         userScoreLabel = new JLabel("Pontuação: " + currentUser.getSuccesfulSimulations());
-        userScoreLabel.setName("userScoreLabel"); // <--- Nome para o label da pontuação do usuário
+        userScoreLabel.setName("userScoreLabel"); // Nome para o label da pontuação do usuário
 
         userTextPanel.add(userNameLabel);
         userTextPanel.add(userScoreLabel);
@@ -182,7 +191,7 @@ public class MainFrame extends JFrame {
 
         // panel do lado direito
         JPanel userOptionsPanel = new JPanel();
-        userOptionsPanel.setName("userOptionsPanel"); // <--- Nome para o painel de opções do usuário
+        userOptionsPanel.setName("userOptionsPanel"); // Nome para o painel de opções do usuário
         userOptionsPanel.setLayout(new BoxLayout(userOptionsPanel, BoxLayout.Y_AXIS));
         userOptionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -198,7 +207,7 @@ public class MainFrame extends JFrame {
 
         // botão de log off
         JButton exitButton = new JButton("Sair");
-        exitButton.setName("exitButton"); // <--- Nome para o botão
+        exitButton.setName("exitButton"); // Nome para o botão
         exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         exitButton.addActionListener(e -> {
             LoginFrame loginFrame = new LoginFrame(screenWidth, screenHeight, userService);
@@ -223,9 +232,10 @@ public class MainFrame extends JFrame {
         mainPanel.add(userPanel);
 
         add(mainPanel);
-        setVisible(true); // Garante que a MainFrame seja visível ao ser criada
+        setVisible(true); // Garante que a janela principal seja visível ao ser criada
     }
 
+    // preenche a tabela com informações de usuários do banco de dados
     private JTable getJTable() {
         String [] columnNames = {"Usuário", "Quantidade de Simulações", "Simulações Bem-Sucedidas"};
         List<User> users = userService.getAllUsers();
@@ -252,6 +262,7 @@ public class MainFrame extends JFrame {
         return tab;
     }
 
+    // recarrega tabela de informações e labels estatísticas
     public void refreshPage() { // Public para ser acessível de outras janelas
         System.out.println("Refresh page");
 

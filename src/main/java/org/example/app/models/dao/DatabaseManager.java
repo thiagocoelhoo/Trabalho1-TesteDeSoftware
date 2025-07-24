@@ -5,17 +5,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+// classe de comunicação com a base de dados (feita com java H2)
 public class DatabaseManager {
     private static final String DB_URL = "jdbc:h2:./data/users";
     private static final String USER = "sa";
     private static final String PASS = "sa";
 
-    // Método para obter conexão
+    // Metodo para obter conexão
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DB_URL, USER, PASS);
     }
 
-    // Método de inicialização do banco
+    // Metodo de inicialização do banco de dados
     public static void init() {
         String sql = """
             CREATE TABLE IF NOT EXISTS users (

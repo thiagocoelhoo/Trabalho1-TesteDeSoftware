@@ -6,6 +6,8 @@ import org.example.app.models.dao.UserDAO;
 import java.sql.SQLException;
 import java.util.List;
 
+// classe intermediária de controle de processos do usuário na base de dados
+// compartilhada regras de negócio entre telas
 public class UserService {
     private final UserDAO userDAO;
 
@@ -13,8 +15,10 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
+    // adicionar usuário
     public boolean createUser(String username, String password, String avatar) {
         try {
+            // se usuário já estiver cadastrado, não deve prosseguir
             if (userDAO.findByUsername(username) != null) {
                 System.err.println("Erro: O nome de usuário já existe.");
                 return false;
@@ -32,6 +36,8 @@ public class UserService {
     public void updateUser(User user) {
         userDAO.update(user);
     }
+
+    // verifica se a senha digitada equivale à senha cadastrada para tal usuário
     public boolean authenticate(String username, String password) {
         try {
             User user = userDAO.findByUsername(username);
@@ -59,6 +65,7 @@ public class UserService {
         return userDAO.findAll();
     }
 
+    // aumentar total de simulações rodadas pelo usuário ativo
     public boolean incrementTotalGames(String username) {
         try {
             User user = userDAO.findByUsername(username);
@@ -71,7 +78,7 @@ public class UserService {
             return false;
         }
     }
-
+    // aumentar total de simulações bem sucedidas do usuário ativo
     public boolean incrementWins(String username) {
         try {
             User user = userDAO.findByUsername(username);

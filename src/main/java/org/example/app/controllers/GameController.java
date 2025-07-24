@@ -87,7 +87,6 @@ public class GameController {
         return nearestJumper;
     }
 
-    // condição de parada aqui?
     public void handleCurrentJumper() {
         if (currentJumper == null) {
             selectNextJumper();
@@ -99,7 +98,7 @@ public class GameController {
             currentJumper = null;
         }
 
-        // condição de parada aqui?
+        // condição de parada: pelo menos duas criaturas, contanto que não sejam 'Clusters'
         if (jumpers.size() < 3){
             if (jumpers.get(0).type != JumperType.CLUSTER){
                 finishSimulation();
@@ -115,7 +114,7 @@ public class GameController {
 
     public boolean checkCollision(Jumper j1, Jumper j2) {
         double distance = Math.abs(j1.getX() - j2.getX());
-        final int collision_threshold = 150000;
+        final int collision_threshold = 150000; // alcance de colisão
         return (distance < collision_threshold);
     }
 
@@ -153,7 +152,7 @@ public class GameController {
         }
 
         if (nearest == null) {
-            // Se não houver outra criatura/cluster retorne.
+            // Se não houver outra criatura/'cluster' retorne.
             return;
         }
 

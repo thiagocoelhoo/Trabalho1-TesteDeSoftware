@@ -6,6 +6,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// classe de acesso e manipulação dos dados referentes a usuários
+// integração com banco de dados
 public class UserDAO {
     private final Connection conn;
 
@@ -29,6 +31,7 @@ public class UserDAO {
         }
     }
 
+    // adicionar novo usuário ao bd
     public void insert(User user) {
         String sql = "INSERT INTO users (username, password, partidas_totais, partidas_ganhas, avatar) VALUES (?, ?, ?, ?, ?)";
         try {
@@ -44,6 +47,7 @@ public class UserDAO {
         }
     }
 
+    // buscar no bd por nome de usuário
     public User findByUsername(String username) throws SQLException {
         String sql = "SELECT * FROM users WHERE username = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -64,6 +68,7 @@ public class UserDAO {
         return null;
     }
 
+    // listar todos os usuários da base de dados
     public List<User> findAll() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users ORDER BY partidas_ganhas DESC";
@@ -91,6 +96,7 @@ public class UserDAO {
         return users;
     }
 
+    // atualizar informações de usuário na base de dados
     public void update(User user) {
         String sql = "UPDATE users SET password = ?, partidas_totais = ?, partidas_ganhas = ?, avatar = ? WHERE username = ?";
         try {
@@ -106,6 +112,7 @@ public class UserDAO {
         }
     }
 
+    // remover usuário da base de dados
     public void delete(String username) throws SQLException {
         try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM users WHERE username = ?")) {
             stmt.setString(1, username);
@@ -113,6 +120,7 @@ public class UserDAO {
         }
     }
 
+    // recebe a soma da quantidade de simulações de todos os usuários registrados
     public int getTotalSimulations() throws SQLException {
         String sql = "SELECT SUM(partidas_totais) AS total FROM users";
         try (PreparedStatement stmt = conn.prepareStatement(sql);
@@ -121,6 +129,7 @@ public class UserDAO {
         }
     }
 
+    // recebe a média de simulações concluídas de todos os usuários registrados
     public double getAverageWins() throws SQLException {
         String sql = "SELECT AVG(partidas_ganhas) AS avg FROM users";
         try (PreparedStatement stmt = conn.prepareStatement(sql);

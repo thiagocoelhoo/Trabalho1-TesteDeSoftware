@@ -2,7 +2,6 @@ package org.example.app.view;
 
 import org.example.app.controllers.GameController;
 import org.example.app.models.User;
-import org.example.app.models.dao.UserDAO;
 import org.example.app.services.UserService;
 
 import javax.swing.*;
@@ -24,6 +23,7 @@ public class SimulationFrame {
     UserService userService;
     String currentUser;
 
+    // objeto que verifica o encerramento da janela na thread para chamar um método
     private Runnable onCloseCallback;
 
     public SimulationFrame(int screenWidth, int screenHeight, String currUser, UserService userService, Runnable onCloseCallback) {
@@ -35,6 +35,7 @@ public class SimulationFrame {
         showQuantityFrame();
     }
 
+    // tela menor de seleção de quantidade de criaturas para a simulação
     private void showQuantityFrame() {
         JFrame qtWindow = createJFrame(screenWidth, screenHeight, 300, 200);
 
@@ -68,6 +69,7 @@ public class SimulationFrame {
         qtWindow.setVisible(true);
     }
 
+    // tela de simulação
     private void showSimulationFrame(int qtCreatures) {
         window = new JFrame("Jumping Creatures");
         window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -89,6 +91,7 @@ public class SimulationFrame {
         gamePanel = new GameView(game, user, userService);
         gamePanel.start();
 
+        // verifica se a simulação foi encerrada, fechando a tela em caso positivo
         gamePanel.addComponentListener(new ComponentListener(){
             public void componentHidden(ComponentEvent e) {
                 if (e.getComponent() == gamePanel) {
@@ -97,6 +100,7 @@ public class SimulationFrame {
                     window.dispose();
                 }
             }
+            // funções não necessárias da ‘interface’ ComponentListener
             public void componentResized(ComponentEvent e) {
 
             }

@@ -20,8 +20,8 @@ import java.util.List;
 * Classe destinada à parte gráfica da simulação
 */
 public class GameView extends JPanel implements ActionListener {
-    private int frameInterval = 1; // Interval in milliseconds
-    private float simulationSpeed = 10.0f;
+    private final int frameInterval = 1; // Interval in milliseconds
+    private final float simulationSpeed = 10.0f;
     private Timer timer;
     private long lastTick = 0;
 

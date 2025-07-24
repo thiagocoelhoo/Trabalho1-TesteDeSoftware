@@ -1,5 +1,6 @@
 package org.example.app.models;
 
+// classe entidade principal do sistema
 public class User {
     private Integer id;
     private String username;
