@@ -53,12 +53,12 @@ public class MainController {
 
     public String getAvatarPath(String avatar) {
         return switch (avatar) {
-            case "guardian 1" -> "/org/example/app/resources/aegislash.png";
-            case "guardian 2" -> "/org/example/app/resources/regigigas.png";
-            case "creature 1" -> "/org/example/app/resources/spoink.png";
-            case "creature 2" -> "/org/example/app/resources/spoink_red.png";
-            case "cluster" -> "/org/example/app/resources/grumpig.png";
-            default -> "/org/example/app/resources/grumpig.png";
+            case "guardian 1" -> "src/main/java/org/example/app/resources/aegislash.png";
+            case "guardian 2" -> "src/main/java/org/example/app/resources/regigigas.png";
+            case "creature 1" -> "src/main/java/org/example/app/resources/spoink.png";
+            case "creature 2" -> "src/main/java/org/example/app/resources/spoink_red.png";
+            case "cluster" -> "src/main/java/org/example/app/resources/grumpig.png";
+            default -> null;
         };
     }
 

@@ -135,7 +135,8 @@ public class MainFrame extends JFrame {
         userAvatarLabel.setName("userAvatarLabel");
         String avatarPath = controller.getAvatarPath(currentUser.getAvatar());
         if (avatarPath != null) {
-            ImageIcon icon = new ImageIcon(avatarPath); // TODO resolver bug visual que não carrega avatar
+            ImageIcon icon = new ImageIcon(avatarPath);
+            System.out.println(avatarPath);
             userAvatarLabel.setIcon(icon);
         }
         userAvatarPanel.add(userAvatarLabel);
