@@ -18,6 +18,7 @@ public class NewUserFrame extends JFrame {
 
     public void init() {
         setTitle("Novo Usuário");
+        setName("newUserFrame");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 400);
         setLocationRelativeTo(null);

@@ -14,6 +14,8 @@ public class SimulationFrame extends JFrame {
     }
 
     private void showQuantityFrame() {
+        setTitle("Quantity Simulation");
+        setName("QuantitySimulation");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(300, 200);
         setLocationRelativeTo(null);
@@ -25,8 +27,10 @@ public class SimulationFrame extends JFrame {
         quantidadeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JSpinner quantidadeSpinner = createSpinner();
+        quantidadeSpinner.setName("quantidadeSpinner");
 
         JButton startSimButton = new JButton("Start");
+        startSimButton.setName("startSimButton");
         startSimButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         startSimButton.addActionListener(e -> {
             int qt = (int) quantidadeSpinner.getValue();

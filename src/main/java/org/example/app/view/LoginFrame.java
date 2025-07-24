@@ -22,6 +22,7 @@ public class LoginFrame extends JFrame {
 
     private void init(int windowWidth, int windowHeight) {
         setTitle("Login");
+        setName("Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(windowWidth, windowHeight);
         setLocationRelativeTo(null);
@@ -89,7 +90,10 @@ public class LoginFrame extends JFrame {
         buttonPanel.add(loginButton);
         buttonPanel.add(Box.createVerticalStrut(5));
 
-        loginLabel = new JLabel("Novo usuário?");
+
+        JLabel loginLabel = new JLabel("Novo usuário?");
+        loginLabel.setName("newUserLabel");
+
         loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
