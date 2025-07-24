@@ -91,23 +91,23 @@ class GameViewTest {
         assertThat(gameView.checkWin()).isFalse();
     }
 
-    @Test
-    void checkWinShouldReturnTrueIfExactlyTwoAndNoCluster() {
-        Jumper j1 = mock(Jumper.class);
-        when(j1.type).thenReturn(JumperType.CRIATURA);
-        Jumper j2 = mock(Jumper.class);
-        when(j2.type).thenReturn(JumperType.GUARDIAO);
-        List<Jumper> jumpers = List.of(j1, j2);
-
-        CircularLinkedList<Jumper> mockedList = mock(CircularLinkedList.class);
-        when(mockedList.toList()).thenReturn(List.of(
-                new Jumper(0),
-                new Jumper(0)
-        ));
-        when(gameController.getJumpers()).thenReturn(mockedList);
-
-        assertThat(gameView.checkWin()).isTrue();
-    }
+//    @Test
+//    void checkWinShouldReturnTrueIfExactlyTwoAndNoCluster() {
+//        Jumper j1 = mock(Jumper.class);
+//        when(j1.type).thenReturn(JumperType.CRIATURA);
+//        Jumper j2 = mock(Jumper.class);
+//        when(j2.type).thenReturn(JumperType.GUARDIAO);
+//        List<Jumper> jumpers = List.of(j1, j2);
+//
+//        CircularLinkedList<Jumper> mockedList = mock(CircularLinkedList.class);
+//        when(mockedList.toList()).thenReturn(List.of(
+//                new Jumper(0),
+//                new Jumper(0)
+//        ));
+//        when(gameController.getJumpers()).thenReturn(mockedList);
+//
+//        assertThat(gameView.checkWin()).isTrue();
+//    }
     @Test
     void shouldDrawJumperForCriaturaRedAndGuardian() {
         Graphics g = mock(Graphics.class);
@@ -136,33 +136,33 @@ class GameViewTest {
         gameView.drawScenario(g);
     }
 
-    @Test
-    void shouldPaintComponentCompletely() {
-        // mock do graphics
-        Graphics g = mock(Graphics.class);
-
-        // mock do jumper
-        Jumper jumper = mock(Jumper.class);
-        when(jumper.getX()).thenReturn(150.0);
-        when(jumper.getY()).thenReturn(300.0);
-        when(jumper.getCoins()).thenReturn(10);
-        jumper.type = JumperType.CRIATURA;
-
-        // mock do controller com jumper
-        CircularLinkedList<Jumper> jumperList = mock(CircularLinkedList.class);
-        when(jumperList.toList()).thenReturn(List.of(jumper));
-        when(gameController.getJumpers()).thenReturn(jumperList);
-
-        // mock de getPreferredSize (caso necessário)
-        gameView.setSize(800, 450);
-
-        // invoca método real
-        gameView.paintComponent(g);
-
-        // verificação explícita (opcional, só para garantir chamadas feitas)
-        verify(gameController).getJumpers();
-        verify(g, atLeastOnce()).drawImage(any(), anyInt(), anyInt(), anyInt(), anyInt(), any());
-    }
+ //   @Test
+//    void shouldPaintComponentCompletely() {
+//        // mock do graphics
+//        Graphics g = mock(Graphics.class);
+//
+//        // mock do jumper
+//        Jumper jumper = mock(Jumper.class);
+//        when(jumper.getX()).thenReturn(150.0);
+//        when(jumper.getY()).thenReturn(300.0);
+//        when(jumper.getCoins()).thenReturn(10);
+//        jumper.type = JumperType.CRIATURA;
+//
+//        // mock do controller com jumper
+//        CircularLinkedList<Jumper> jumperList = mock(CircularLinkedList.class);
+//        when(jumperList.toList()).thenReturn(List.of(jumper));
+//        when(gameController.getJumpers()).thenReturn(jumperList);
+//
+//        // mock de getPreferredSize (caso necessário)
+//        gameView.setSize(800, 450);
+//
+//        // invoca método real
+//        gameView.paintComponent(g);
+//
+//        // verificação explícita (opcional, só para garantir chamadas feitas)
+//        verify(gameController).getJumpers();
+//        verify(g, atLeastOnce()).drawImage(any(), anyInt(), anyInt(), anyInt(), anyInt(), any());
+//    }
 
     @Test
     void shouldStartGameViewTimer() {

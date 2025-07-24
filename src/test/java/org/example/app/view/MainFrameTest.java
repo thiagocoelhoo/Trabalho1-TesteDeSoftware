@@ -58,7 +58,7 @@ public class MainFrameTest {
         window.cleanUp();
     }
 
-    // ✅ Verifica se os componentes principais existem
+    // Verifica se os componentes principais existem
     @Test
     public void shouldShowMainComponents() {
         window.label("userNameLabel").requireText("Usuário: Alice");
@@ -72,7 +72,7 @@ public class MainFrameTest {
         window.button("removeUserButton").requireVisible();
     }
 
-    // ✅ Verifica se a tabela contém o usuário esperado
+    // Verifica se a tabela contém o usuário esperado
     @Test
     public void shouldDisplayUserInTable() {
         window.table("usersTable")
@@ -82,7 +82,7 @@ public class MainFrameTest {
                 });
     }
 
-    // ✅ Verifica se botão de remover usuário bloqueia auto-remover
+    // Verifica se botão de remover usuário bloqueia auto-remover
     @Test
     public void shouldNotAllowSelfRemoval() {
         window.table("usersTable").selectRows(0);
@@ -95,7 +95,7 @@ public class MainFrameTest {
         window.dialog().button().click(); // Fecha o diálogo
     }
 
-    // ✅ Verifica se clicar em "Nova Simulação" chama serviço de incremento
+    // Verifica se clicar em "Nova Simulação" chama serviço de incremento
     @Test
     public void shouldTriggerSimulationIncrement() {
         window.button("simulateButton").click();
@@ -103,7 +103,7 @@ public class MainFrameTest {
         verify(userService, times(1)).incrementTotalGames("Alice");
     }
 
-    // ✅ Verifica se ao clicar em "Sair", o frame é fechado e LoginFrame aberto
+    // Verifica se ao clicar em "Sair", o frame é fechado e LoginFrame aberto
     @Test
     public void shouldExitToLoginFrame() {
         window.button("exitButton").click();

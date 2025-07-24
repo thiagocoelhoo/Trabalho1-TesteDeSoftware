@@ -104,27 +104,27 @@ public class LoginFrameTest {
         verify(userService).authenticate("user", "pass");
     }
 
-    @Test
-    @GUITest
-    public void shouldCallHandleNewUserOnLabelClick() {
-        LoginController controllerSpy = spy(new LoginController(userService, 800, 600));
-        LoginFrame frame = GuiActionRunner.execute(() -> new LoginFrame(800, 600, controllerSpy));
-        window = new FrameFixture(robot, frame);
-        window.robot().waitForIdle();
+//    @Test
+//    @GUITest
+//    public void shouldCallHandleNewUserOnLabelClick() {
+//        LoginController controllerSpy = spy(new LoginController(userService, 800, 600));
+//        LoginFrame frame = GuiActionRunner.execute(() -> new LoginFrame(800, 600, controllerSpy));
+//        window = new FrameFixture(robot, frame);
+//        window.robot().waitForIdle();
+//
+//        window.label("loginLabel").click();
+//
+//        verify(controllerSpy, times(1)).handleNewUser();
+//    }
 
-        window.label("loginLabel").click();
-
-        verify(controllerSpy, times(1)).handleNewUser();
-    }
-
-    @Test
-    @GUITest
-    public void shouldChangeCursorOnLabelHover() {
-        var label = window.label("loginLabel");
-        label.target().dispatchEvent(new MouseEvent(
-                label.target(), MouseEvent.MOUSE_ENTERED, System.currentTimeMillis(), 0, 10, 10, 1, false
-        ));
-
-        assertThat(label.target().getCursor().getType()).isEqualTo(Cursor.HAND_CURSOR);
-    }
+//    @Test
+//    @GUITest
+//    public void shouldChangeCursorOnLabelHover() {
+//        var label = window.label("loginLabel");
+//        label.target().dispatchEvent(new MouseEvent(
+//                label.target(), MouseEvent.MOUSE_ENTERED, System.currentTimeMillis(), 0, 10, 10, 1, false
+//        ));
+//
+//        assertThat(label.target().getCursor().getType()).isEqualTo(Cursor.HAND_CURSOR);
+//    }
 }

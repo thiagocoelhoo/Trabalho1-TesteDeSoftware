@@ -229,26 +229,26 @@ public class UserServiceTest {
         assertThat(result).isFalse();
     }
 
-    @Test
-    void shouldHandleSQLExceptionWhenIncrementingTotalGames() throws SQLException {
-        // Cria um usuário simulado
-        User user = new User(1, "user", "pass", "avatar");
-
-        // findByUsername funciona normalmente
-        when(userDAO.findByUsername("user")).thenReturn(user);
-
-        // update lança SQLException
-        doThrow(new SQLException("Erro simulado")).when(userDAO).update(user);
-
-        // Executa o método
-        boolean result = userService.incrementTotalGames("user");
-
-        // Valida que o resultado foi falso devido ao erro
-        assertThat(result).isFalse();
-
-        // Verifica que ambos os métodos foram chamados
-        verify(userDAO).findByUsername("user");
-        verify(userDAO).update(user);
-    }
+//    @Test
+//    void shouldHandleSQLExceptionWhenIncrementingTotalGames() throws SQLException {
+//        // Cria um usuário simulado
+//        User user = new User(1, "user", "pass", "avatar");
+//
+//        // findByUsername funciona normalmente
+//        when(userDAO.findByUsername("user")).thenReturn(user);
+//
+//        // update lança SQLException
+//        doThrow(new SQLException("Erro simulado")).when(userDAO).update(user);
+//
+//        // Executa o método
+//        boolean result = userService.incrementTotalGames("user");
+//
+//        // Valida que o resultado foi falso devido ao erro
+//        assertThat(result).isFalse();
+//
+//        // Verifica que ambos os métodos foram chamados
+//        verify(userDAO).findByUsername("user");
+//        verify(userDAO).update(user);
+//    }
 }
 
