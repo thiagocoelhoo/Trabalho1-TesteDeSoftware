@@ -1,5 +1,8 @@
 package org.example.app.view;
 
+import org.example.app.controllers.MainController;
+import org.example.app.controllers.LoginController;
+import org.example.app.controllers.SimulationController;
 import org.example.app.models.User;
 import org.example.app.services.UserService;
 
@@ -7,12 +10,10 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.List;
+import java.util.Objects;
 
-// classe referente à parte gráfica central do sistema
 public class MainFrame extends JFrame {
-    private UserService userService;
-    private User currentUser;
+    private final MainController controller;
     private DefaultTableModel tableModel;
     private JTable tab;
     private JLabel totalSimLabel;
@@ -21,23 +22,20 @@ public class MainFrame extends JFrame {
     private final int screenWidth;
     private final int screenHeight;
 
-    public MainFrame(int screenWidth, int screenHeight, User currUser, UserService userService) {
-        this.userService = userService;
-        this.currentUser = currUser;
+    public MainFrame(int screenWidth, int screenHeight, MainController controller) {
+        this.controller = controller;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         init();
     }
 
     public void init() {
-        // configura janela
         setTitle("Jumping Creatures!");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // painel principal que engloba o resto da página
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -49,34 +47,29 @@ public class MainFrame extends JFrame {
         tablePanel.setPreferredSize(new Dimension(screenWidth, screenHeight / 2));
 
         tab = getJTable();
-        tab.setName("usersTable"); //  Nome para a tabela
+        tab.setName("usersTable");
         JScrollPane scrollPane = new JScrollPane(tab);
-        scrollPane.setName("usersTableScrollPane"); // Nome para o scroll pane
+        scrollPane.setName("usersTableScrollPane");
         tablePanel.add(scrollPane);
 
-        // textos da simulação
         JPanel simTextPanel = new JPanel();
         simTextPanel.setLayout(new BoxLayout(simTextPanel, BoxLayout.Y_AXIS));
-        totalSimLabel = new JLabel("Total de simulações: " + userService.getTotalSimulations());
-        totalSimLabel.setName("totalSimulationsLabel"); //  Nome para o label
-        mediaSimLabel = new JLabel("Média de simulações ganhas: " + userService.getAverageWins());
-        mediaSimLabel.setName("averageWinsLabel"); //  Nome para o label
+        totalSimLabel = new JLabel("Total de simulações: " + controller.getTotalSimulations());
+        totalSimLabel.setName("totalSimulationsLabel");
+        mediaSimLabel = new JLabel("Média de simulações ganhas: " + controller.getAverageWins());
+        mediaSimLabel.setName("averageWinsLabel");
         simTextPanel.add(totalSimLabel);
         simTextPanel.add(mediaSimLabel);
 
-        // botões de adicionar e remover usuários
         JPanel tableButtonsPanel = new JPanel();
         tableButtonsPanel.setLayout(new BoxLayout(tableButtonsPanel, BoxLayout.Y_AXIS));
         tableButtonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // adicionar usuario
         JButton addUserButton = new JButton("Adicionar Usuário");
-        addUserButton.setName("addUserButton"); // Nome para o botão
+        addUserButton.setName("addUserButton");
         addUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         addUserButton.addActionListener(e -> {
-            NewUserFrame newUserFrame = new NewUserFrame(screenWidth, screenHeight, userService);
-
-            // reinicia as informações da página Main após utilizar a página de novo usuário
+            NewUserFrame newUserFrame = new NewUserFrame(screenWidth, screenHeight, controller.getUserService());
             newUserFrame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent e) {
@@ -88,31 +81,26 @@ public class MainFrame extends JFrame {
                     refreshPage();
                 }
             });
-            newUserFrame.setVisible(true); // Garante que a nova janela seja visível
+            newUserFrame.setVisible(true);
         });
 
-        // remover usuario
         JButton removeUserButton = new JButton("Remover Usuário");
-        removeUserButton.setName("removeUserButton"); // Nome para o botão
+        removeUserButton.setName("removeUserButton");
         removeUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // verifica qual linha da tabela está selecionada e tenta remoção do usuário
         removeUserButton.addActionListener(e -> {
             int selectedRow = tab.getSelectedRow();
-
-            // não permite remoção sem seleção prévia
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, "Selecione um usuário para remover.");
                 return;
             }
             String selectedUser = tab.getModel().getValueAt(selectedRow, 0).toString();
 
-            // bloqueia remoção de usuário atual
-            if (selectedUser.equals(currentUser.getUsername())){
+            if (!controller.canRemoveUser(selectedUser)) {
                 JOptionPane.showMessageDialog(this, "Usuário não pode se remover!");
                 return;
             }
-            userService.removeUser(selectedUser);
+
+            controller.removeUser(selectedUser);
             refreshPage();
         });
 
@@ -128,60 +116,37 @@ public class MainFrame extends JFrame {
         simOptionsPanel.add(tableButtonsPanel);
 
         JSeparator horizontalSeparator = new JSeparator(SwingConstants.HORIZONTAL);
-        horizontalSeparator.setName("mainSeparator"); //  Nome para o separador
+        horizontalSeparator.setName("mainSeparator");
 
-        // panel da área do usuário
         JPanel userPanel = new JPanel();
         userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.LINE_AXIS));
 
-        // panel do lado esquerdo
         JPanel userInfoPanel = new JPanel();
         userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.LINE_AXIS));
 
-        // panel da imagem
         JPanel userAvatarPanel = new JPanel();
-        userAvatarPanel.setName("userAvatarPanel"); // Nome para o painel do avatar
+        userAvatarPanel.setName("userAvatarPanel");
         Border avatarBorder = BorderFactory.createLineBorder(Color.black);
         userAvatarPanel.setBorder(avatarBorder);
-        String userAvatar = currentUser.getAvatar();
+
+        User currentUser = controller.getCurrentUser();
         JLabel userAvatarLabel = new JLabel();
-        userAvatarLabel.setName("userAvatarLabel"); // Nome para o label da imagem do avatar
-
-        // verifica qual imagem deve ser utilizada para representar o usuário
-        switch (userAvatar) {
-            case "guardian 1":
-                ImageIcon img = new ImageIcon(getClass().getResource("/org/example/app/resources/aegislash.png"));
-                userAvatarLabel.setIcon(img);
-                break;
-
-            case "guardian 2":
-                ImageIcon img2 = new ImageIcon(getClass().getResource("/org/example/app/resources/regigigas.png"));
-                userAvatarLabel.setIcon(img2);
-                break;
-            case "creature 1":
-                ImageIcon img3 = new ImageIcon(getClass().getResource("/org/example/app/resources/spoink.png"));
-                userAvatarLabel.setIcon(img3);
-                break;
-            case "creature 2":
-                ImageIcon img4 = new ImageIcon(getClass().getResource("/org/example/app/resources/spoink_red.png"));
-                userAvatarLabel.setIcon(img4);
-                break;
-            case "cluster":
-                ImageIcon img5 = new ImageIcon(getClass().getResource("/org/example/app/resources/grumpig.png"));
-                userAvatarLabel.setIcon(img5);
-                break;
+        userAvatarLabel.setName("userAvatarLabel");
+        String avatarPath = controller.getAvatarPath(currentUser.getAvatar());
+        if (avatarPath != null) {
+            ImageIcon icon = new ImageIcon(avatarPath);
+            userAvatarLabel.setIcon(icon);
         }
         userAvatarPanel.add(userAvatarLabel);
 
-        // panel de textos do usuário (nome e pontuação)
         JPanel userTextPanel = new JPanel();
-        userTextPanel.setName("userTextPanel"); // Nome para o painel de texto do usuário
+        userTextPanel.setName("userTextPanel");
         userTextPanel.setLayout(new BoxLayout(userTextPanel, BoxLayout.Y_AXIS));
 
         JLabel userNameLabel = new JLabel("Usuário: " + currentUser.getUsername());
-        userNameLabel.setName("userNameLabel"); // Nome para o label do nome do usuário
+        userNameLabel.setName("userNameLabel");
         userScoreLabel = new JLabel("Pontuação: " + currentUser.getSuccesfulSimulations());
-        userScoreLabel.setName("userScoreLabel"); // Nome para o label da pontuação do usuário
+        userScoreLabel.setName("userScoreLabel");
 
         userTextPanel.add(userNameLabel);
         userTextPanel.add(userScoreLabel);
@@ -189,28 +154,27 @@ public class MainFrame extends JFrame {
         userInfoPanel.add(userAvatarPanel);
         userInfoPanel.add(userTextPanel);
 
-        // panel do lado direito
         JPanel userOptionsPanel = new JPanel();
-        userOptionsPanel.setName("userOptionsPanel"); // Nome para o painel de opções do usuário
+        userOptionsPanel.setName("userOptionsPanel");
         userOptionsPanel.setLayout(new BoxLayout(userOptionsPanel, BoxLayout.Y_AXIS));
         userOptionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // botão de simulação
         JButton simulateButton = new JButton("Nova Simulação");
         simulateButton.setName("simulateButton");
         simulateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         simulateButton.addActionListener(e -> {
-            userService.incrementTotalGames(currentUser.getUsername());
-            SimulationFrame sim = new SimulationFrame(screenWidth, screenHeight, currentUser.getUsername(), userService, this::refreshPage);
-//            sim.setVisible(true); // Garante que a nova janela seja visível
+            controller.startSimulation();
+            SimulationController simController = new SimulationController(controller.getUserService(), controller.getCurrentUser().getUsername(), this::refreshPage);
+            SimulationFrame simFrame = new SimulationFrame(screenWidth, screenHeight, simController);
+            simFrame.setVisible(true);
         });
 
-        // botão de log off
         JButton exitButton = new JButton("Sair");
-        exitButton.setName("exitButton"); // Nome para o botão
+        exitButton.setName("exitButton");
         exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         exitButton.addActionListener(e -> {
-            LoginFrame loginFrame = new LoginFrame(screenWidth, screenHeight, userService);
+            LoginController loginController = new LoginController(controller.getUserService(), screenWidth, screenHeight );
+            LoginFrame loginFrame = new LoginFrame(600, 400, loginController);
             loginFrame.setVisible(true);
             dispose();
         });
@@ -232,23 +196,13 @@ public class MainFrame extends JFrame {
         mainPanel.add(userPanel);
 
         add(mainPanel);
-        setVisible(true); // Garante que a janela principal seja visível ao ser criada
+        setVisible(true);
     }
 
-    // preenche a tabela com informações de usuários do banco de dados
     private JTable getJTable() {
-        String [] columnNames = {"Usuário", "Quantidade de Simulações", "Simulações Bem-Sucedidas"};
-        List<User> users = userService.getAllUsers();
+        String[] columnNames = {"Usuário", "Quantidade de Simulações", "Simulações Bem-Sucedidas"};
+        Object[][] userData = controller.getUsersTableData();
 
-        Object[][] userData = new Object[users.size()][columnNames.length];
-        for (int i = 0; i < users.size(); i++) {
-            User u = users.get(i);
-            userData[i][0] = u.getUsername();
-            userData[i][1] = u.getSimulationCount();
-            userData[i][2] = u.getSuccesfulSimulations();
-
-        }
-        // cria um modelo que impede as células de serem editadas
         tableModel = new DefaultTableModel(userData, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -262,34 +216,17 @@ public class MainFrame extends JFrame {
         return tab;
     }
 
-    // recarrega tabela de informações e labels estatísticas
-    public void refreshPage() { // Public para ser acessível de outras janelas
-        System.out.println("Refresh page");
-
-        // * tabela *
-        // Limpa o modelo
+    public void refreshPage() {
         tableModel.setRowCount(0);
-
-        // Pega os dados atualizados do banco
-        List<User> databaseUsers = userService.getAllUsers();
-
-        // Adiciona os dados no modelo
-        for (User u : databaseUsers) {
-            Object[] row = {
-                    u.getUsername(),
-                    u.getSimulationCount(),
-                    u.getSuccesfulSimulations()
-            };
+        Object[][] userData = controller.getUsersTableData();
+        for (Object[] row : userData) {
             tableModel.addRow(row);
         }
 
-        // ** labels de pontuação global **
-        totalSimLabel.setText("Total de simulações: " + userService.getTotalSimulations());
-        mediaSimLabel.setText("Média de simulações ganhas: " + userService.getAverageWins()); // Corrigido para getAverageWins
+        totalSimLabel.setText("Total de simulações: " + controller.getTotalSimulations());
+        mediaSimLabel.setText("Média de simulações ganhas: " + controller.getAverageWins());
 
-        // *** label de pontuação de usuário ***
-        // Atualiza o currentUser para pegar os dados mais recentes
-        currentUser = userService.getUser(currentUser.getUsername());
-        userScoreLabel.setText("Pontuação: " + currentUser.getSuccesfulSimulations());
+        User updated = controller.getUpdatedCurrentUser();
+        userScoreLabel.setText("Pontuação: " + updated.getSuccesfulSimulations());
     }
 }

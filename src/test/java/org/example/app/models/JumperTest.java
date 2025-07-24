@@ -1,6 +1,5 @@
-package org.example;
+package org.example.app.models;
 
-import org.example.app.models.Jumper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 

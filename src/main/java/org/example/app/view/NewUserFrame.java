@@ -1,5 +1,6 @@
 package org.example.app.view;
 
+import org.example.app.controllers.NewUserController;
 import org.example.app.services.UserService;
 
 import javax.swing.*;
@@ -7,13 +8,12 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-// classe referente à parte gráfica da tela de adicionar novo usuário
 public class NewUserFrame extends JFrame {
-    private UserService userService;
+    private final NewUserController controller;
 
     public NewUserFrame(int screenWidth, int screenHeight, UserService userService) {
-        this.userService = userService;
-        this.init();
+        this.controller = new NewUserController(userService, this);
+        init();
     }
 
     public void init() {
@@ -31,62 +31,43 @@ public class NewUserFrame extends JFrame {
         newUserLabel.setFont(new Font("Arial", Font.BOLD, 25));
         newUserLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // nome
+        // Nome
         JLabel nameLabel = new JLabel("Nome:");
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         JTextField nameField = new JTextField();
-        nameField.setName("nameField"); // <--- Adicionando nome
+        nameField.setName("nameField");
         nameField.setMaximumSize(new Dimension(200, 30));
         nameField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // senha
+        // Senha
         JLabel passwordLabel = new JLabel("Senha:");
         passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         JPasswordField passwordField = new JPasswordField();
-        passwordField.setName("passwordField"); // Adicionando nome
+        passwordField.setName("passwordField");
         passwordField.setMaximumSize(new Dimension(200, 30));
         passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // avatar
+        // Avatar
         JLabel avatarLabel = new JLabel("Avatar:");
         avatarLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         String[] avatarOptions = {"guardian 1", "guardian 2", "creature 1", "creature 2", "cluster"};
-        JComboBox avatarComboBox = new JComboBox(avatarOptions);
-        avatarComboBox.setName("avatarComboBox"); // Adicionando nome
+        JComboBox<String> avatarComboBox = new JComboBox<>(avatarOptions);
+        avatarComboBox.setName("avatarComboBox");
         avatarComboBox.setMaximumSize(new Dimension(200, 30));
         avatarComboBox.setSelectedItem("guardian 1");
 
-        // botão de criar usuário
+        // Botão Criar
         JButton createButton = new JButton("Criar");
-        createButton.setName("createButton"); // Adicionando nome
+        createButton.setName("createButton");
         createButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // tenta criar usuário no sistema
         createButton.addActionListener(e -> {
             String name = nameField.getText();
             String password = new String(passwordField.getPassword());
-
-            if (name.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "Preencha todos os campos e selecione uma imagem.");
-                return;
-            }
-
-            boolean created = userService.createUser(name, password, avatarComboBox.getSelectedItem().toString());
-
-            if (created) {
-                JOptionPane.showMessageDialog(this, "Usuário criado com sucesso!");
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Erro de inclusão: o nome de usuário '" + name + "' já existe.");
-                nameField.setText("");
-            }
+            String avatar = (String) avatarComboBox.getSelectedItem();
+            controller.handleCreateUser(name, password, avatar);
         });
 
-        // procura o pressionar da tecla 'enter' para ativar botão
         createButton.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -95,7 +76,7 @@ public class NewUserFrame extends JFrame {
             }
         });
 
-        // adiciona tudo ao painel
+        // Adiciona ao painel
         mainPanel.add(newUserLabel);
         mainPanel.add(Box.createVerticalStrut(20));
         mainPanel.add(nameLabel);

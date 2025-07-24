@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.app.controllers.LoginController;
 import org.example.app.models.dao.DatabaseManager;
 import org.example.app.models.dao.UserDAO;
 import org.example.app.services.UserService;
@@ -23,7 +24,8 @@ public class Main {
         UserDAO userDAO = new UserDAO();
         UserService userService = new UserService(userDAO);
 
-        LoginFrame login = new LoginFrame(600, 400, userService);
+        LoginController loginController = new LoginController(userService, screenWidth, screenHeight);
+        LoginFrame login = new LoginFrame(600, 400, loginController);
         login.setVisible(true);
     }
 }

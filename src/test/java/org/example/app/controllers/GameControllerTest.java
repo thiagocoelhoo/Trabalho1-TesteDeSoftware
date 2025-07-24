@@ -1,6 +1,5 @@
-package org.example;
+package org.example.app.controllers;
 
-import org.example.app.controllers.GameController;
 import org.example.app.models.Jumper;
 import org.example.app.models.JumperType;
 import org.example.utils.CircularLinkedList;
@@ -13,7 +12,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class GameTest {
+public class GameControllerTest {
     private GameController game;
 
     @BeforeEach

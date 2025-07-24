@@ -1,4 +1,4 @@
-package org.example;
+package org.example.app.utils;
 
 import org.example.utils.CircularLinkedList;
 import org.junit.jupiter.api.BeforeEach;
