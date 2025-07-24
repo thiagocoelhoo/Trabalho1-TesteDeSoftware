@@ -43,6 +43,7 @@ public class LoginFrame extends JFrame {
         JLabel userLabel = new JLabel("Usuário: ");
         userLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         userInputField = createJTextField();
+        userInputField.setName("usernameField");
         userPanel.add(userLabel);
         userPanel.add(Box.createHorizontalStrut(10));
         userPanel.add(userInputField);
@@ -55,6 +56,7 @@ public class LoginFrame extends JFrame {
         JLabel passwordLabel = new JLabel("Senha:   ");
         passwordLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         passwordInputField = createJPasswordField();
+        passwordInputField.setName("passwordField");
         passwordPanel.add(passwordLabel);
         passwordPanel.add(Box.createHorizontalStrut(10));
         passwordPanel.add(passwordInputField);
@@ -66,6 +68,7 @@ public class LoginFrame extends JFrame {
         buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton loginButton = new JButton("Entrar");
+        loginButton.setName("loginButton");
         loginButton.setFont(new Font("Arial", Font.PLAIN, 16));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginButton.addActionListener(e -> {

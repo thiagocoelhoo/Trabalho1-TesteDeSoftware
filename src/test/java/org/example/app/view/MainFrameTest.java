@@ -6,6 +6,7 @@ import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+import org.example.app.controllers.MainController;
 import org.example.app.models.User;
 import org.example.app.services.UserService;
 import org.example.app.view.MainFrame;
@@ -43,7 +44,7 @@ public class MainFrameTest {
         robot.settings().delayBetweenEvents(10);
 
         MainFrame frame = GuiActionRunner.execute(() -> {
-            MainFrame f = new MainFrame(800, 600, currentUser, userService);
+            MainFrame f = new MainFrame(800, 600, new MainController(userService, currentUser));
             f.setVisible(true);
             return f;
         });
