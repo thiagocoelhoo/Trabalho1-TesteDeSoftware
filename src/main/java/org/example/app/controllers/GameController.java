@@ -103,7 +103,6 @@ public class GameController {
             if (jumpers.get(0).type != JumperType.CLUSTER){
                 finishSimulation();
             }
-
         }
     }
 

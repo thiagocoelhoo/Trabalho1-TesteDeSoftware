@@ -11,6 +11,11 @@ import org.example.app.models.User;
 import org.example.app.services.UserService;
 import org.junit.jupiter.api.*;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class LoginFrameTest {
@@ -60,25 +65,6 @@ public class LoginFrameTest {
         submitButton.requireVisible();
     }
 
-//    @Test
-//    @GUITest
-//    public void shouldClearFieldsWhenLoginFails() {
-//        // Mock comportamento: login inválido
-//        when(userService.authenticate("user", "wrong")).thenReturn(false);
-//        when(userService.getUser("user")).thenReturn(null);
-//
-//        var usernameField = window.textBox("usernameField");
-//        var passwordField = window.textBox("passwordField");
-//        var submitButton = window.button("loginButton");
-//
-//        usernameField.enterText("user");
-//        passwordField.enterText("wrong");
-//
-//        submitButton.click();
-//
-//        usernameField.requireText("");
-//        passwordField.requireText("");
-//    }
 
     @Test
     @GUITest
@@ -98,5 +84,47 @@ public class LoginFrameTest {
 
         // Você pode verificar se o LoginFrame foi fechado:
         // Assertions.assertThrows(Exception.class, () -> window.requireVisible());
+    }
+
+    @Test
+    @GUITest
+    public void shouldTriggerLoginOnEnterKeyPressed() {
+        User mockUser = new User(null, "user", "pass", "");
+        when(userService.authenticate("user", "pass")).thenReturn(true);
+        when(userService.getUser("user")).thenReturn(mockUser);
+
+        var usernameField = window.textBox("usernameField");
+        var passwordField = window.textBox("passwordField");
+
+        usernameField.enterText("user");
+        passwordField.enterText("pass");
+        passwordField.pressAndReleaseKeys(KeyEvent.VK_ENTER);
+
+        // Após VK_ENTER, deve simular clique no botão de login
+        verify(userService).authenticate("user", "pass");
+    }
+
+    @Test
+    @GUITest
+    public void shouldCallHandleNewUserOnLabelClick() {
+        LoginController controllerSpy = spy(new LoginController(userService, 800, 600));
+        LoginFrame frame = GuiActionRunner.execute(() -> new LoginFrame(800, 600, controllerSpy));
+        window = new FrameFixture(robot, frame);
+        window.robot().waitForIdle();
+
+        window.label("loginLabel").click();
+
+        verify(controllerSpy, times(1)).handleNewUser();
+    }
+
+    @Test
+    @GUITest
+    public void shouldChangeCursorOnLabelHover() {
+        var label = window.label("loginLabel");
+        label.target().dispatchEvent(new MouseEvent(
+                label.target(), MouseEvent.MOUSE_ENTERED, System.currentTimeMillis(), 0, 10, 10, 1, false
+        ));
+
+        assertThat(label.target().getCursor().getType()).isEqualTo(Cursor.HAND_CURSOR);
     }
 }

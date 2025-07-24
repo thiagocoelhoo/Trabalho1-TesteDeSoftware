@@ -21,6 +21,7 @@ public class User {
     }
 
     public User(int id, String username, String password, String av, int qtSim, int sucedidas) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.avatar = av;
