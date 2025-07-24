@@ -33,7 +33,10 @@ public class User {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        if (!username.isEmpty()){
+            this.username = username;
+        }
+
     }
 
     public String getPassword() {
@@ -41,7 +44,9 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        if (!password.isEmpty()){
+            this.password = password;
+        }
     }
 
     public String getAvatar() {
@@ -57,7 +62,9 @@ public class User {
     }
 
     public void setSimulationCount(int simulationCount) {
-        this.simulationCount = simulationCount;
+        if (simulationCount >= 0){
+            this.simulationCount = simulationCount;
+        }
     }
 
     public int getSuccesfulSimulations() {
@@ -65,7 +72,9 @@ public class User {
     }
 
     public void setSuccessfulSimulations(int succesfulSimulations) {
-        this.succesfulSimulations = succesfulSimulations;
+        if (succesfulSimulations >= 0){
+            this.succesfulSimulations = succesfulSimulations;
+        }
     }
 
     public int getId() {
