@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-
 public class NewUserFrame extends JFrame {
     private UserService userService;
 
@@ -36,6 +35,7 @@ public class NewUserFrame extends JFrame {
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JTextField nameField = new JTextField();
+        nameField.setName("nameField"); // <--- Adicionando nome
         nameField.setMaximumSize(new Dimension(200, 30));
         nameField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -44,6 +44,7 @@ public class NewUserFrame extends JFrame {
         passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPasswordField passwordField = new JPasswordField();
+        passwordField.setName("passwordField"); // <--- Adicionando nome
         passwordField.setMaximumSize(new Dimension(200, 30));
         passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -52,11 +53,13 @@ public class NewUserFrame extends JFrame {
         avatarLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         String[] avatarOptions = {"guardian 1", "guardian 2", "creature 1", "creature 2", "cluster"};
         JComboBox avatarComboBox = new JComboBox(avatarOptions);
+        avatarComboBox.setName("avatarComboBox"); // <--- Adicionando nome
         avatarComboBox.setMaximumSize(new Dimension(200, 30));
         avatarComboBox.setSelectedItem("guardian 1");
 
         // botão de criar usuário
         JButton createButton = new JButton("Criar");
+        createButton.setName("createButton"); // <--- Adicionando nome
         createButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         createButton.addActionListener(e -> {
@@ -79,7 +82,6 @@ public class NewUserFrame extends JFrame {
                         "Erro de inclusão: o nome de usuário '" + name + "' já existe.");
                 nameField.setText("");
             }
-
         });
 
         createButton.addKeyListener(new KeyAdapter() {

@@ -10,8 +10,6 @@ import org.example.app.models.User;
 import org.example.app.services.UserService;
 import org.junit.jupiter.api.*;
 
-import javax.swing.*;
-
 import static org.mockito.Mockito.*;
 
 public class LoginFrameTest {
@@ -65,7 +63,8 @@ public class LoginFrameTest {
     @GUITest
     public void shouldClearFieldsWhenLoginFails() {
         // Mock comportamento: login inválido
-        when(userService.authenticate("user", "wrong")).thenReturn(null);
+        when(userService.authenticate("user", "wrong")).thenReturn(false);
+        when(userService.getUser("user")).thenReturn(null);
 
         var usernameField = window.textBox("usernameField");
         var passwordField = window.textBox("passwordField");
@@ -83,8 +82,9 @@ public class LoginFrameTest {
     @Test
     @GUITest
     public void shouldOpenMainFrameOnSuccessfulLogin() {
-        User mockUser = new User("user", "any", "");
-        when(userService.authenticate("user", "correct")).thenReturn(mockUser);
+        User mockUser = new User(null, "user", "any", "");
+        when(userService.authenticate("user", "correct")).thenReturn(true);
+        when(userService.getUser("user")).thenReturn(mockUser);
 
         var usernameField = window.textBox("usernameField");
         var passwordField = window.textBox("passwordField");
