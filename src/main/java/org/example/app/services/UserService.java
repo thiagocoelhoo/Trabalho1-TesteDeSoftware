@@ -78,6 +78,7 @@ public class UserService {
             return false;
         }
     }
+
     // aumentar total de simulações bem sucedidas do usuário ativo
     public boolean incrementWins(String username) {
         try {
@@ -88,6 +89,19 @@ public class UserService {
             return true;
         } catch (SQLException e) {
             System.err.println("Erro ao incrementar vitórias: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean clearAllUsers() {
+        try {
+            List<User> allUsers = userDAO.findAll();
+            for (User user : allUsers) {
+                userDAO.delete(user.getUsername());
+            }
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Erro ao limpar usuários: " + e.getMessage());
             return false;
         }
     }

@@ -44,6 +44,7 @@ public class GameView extends JPanel implements ActionListener {
 
     public void init() {
         // Setup panel
+        setName("Simulacao");
         setPreferredSize(new Dimension(800, 450));
         setBackground(Color.BLACK);
 
