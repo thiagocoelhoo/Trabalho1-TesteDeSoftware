@@ -111,4 +111,28 @@ public class MainFrameTest {
         // Aqui apenas garantimos que MainFrame foi fechado
         assertThat(window.target().isDisplayable()).isFalse();
     }
+
+    @Test
+    public void shouldRefreshPageAndUpdateData() {
+        MainFrame frame = (MainFrame) window.target();
+
+        // Atualiza mocks para retorno novo (como se tivesse mudado)
+        when(userService.getAllUsers()).thenReturn(List.of(currentUser));
+        when(userService.getTotalSimulations()).thenReturn(20);
+        when(userService.getAverageWins()).thenReturn(6.5);
+        currentUser.setSuccessfulSimulations(10);
+        when(userService.getUser("Alice")).thenReturn(currentUser);
+
+        GuiActionRunner.execute(() -> frame.refreshPage());
+
+        window.label("totalSimulationsLabel").requireText("Total de simulações: 20");
+        window.label("averageWinsLabel").requireText("Média de simulações ganhas: 6.5");
+        window.label("userScoreLabel").requireText("Pontuação: 10");
+
+        window.table("usersTable")
+                .requireRowCount(1)
+                .requireContents(new String[][] {
+                        {"Alice", "5", "10"}
+                });
+    }
 }

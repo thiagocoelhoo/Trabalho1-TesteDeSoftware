@@ -8,11 +8,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UserTest {
 
     private User user;
+    private User user2;
 
     @BeforeEach
     void setUp() {
         user = new User(1, "usuario1", "password123", "guardian 1");
+        user2 = new User(2, "usuario2", "password123", "guardian 2", 0, 0);
     }
+
 
     // ===============================================================
     //               TESTES DE DOMÍNIO
@@ -26,6 +29,13 @@ public class UserTest {
         assertThat(user.getAvatar()).isEqualTo("guardian 1");
         assertThat(user.getSimulationCount()).isZero();
         assertThat(user.getSuccesfulSimulations()).isZero();
+
+        assertThat(user2.getId()).isEqualTo(2);
+        assertThat(user2.getUsername()).isEqualTo("usuario2");
+        assertThat(user2.getPassword()).isEqualTo("password123");
+        assertThat(user2.getAvatar()).isEqualTo("guardian 2");
+        assertThat(user2.getSimulationCount()).isZero();
+        assertThat(user2.getSuccesfulSimulations()).isZero();
     }
 
     @Test

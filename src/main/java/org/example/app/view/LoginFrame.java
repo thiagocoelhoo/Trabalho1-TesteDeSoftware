@@ -13,6 +13,7 @@ public class LoginFrame extends JFrame {
     private JTextField userInputField;
     private JPasswordField passwordInputField;
     private final LoginController controller;
+    private JLabel loginLabel;
 
     public LoginFrame(int windowWidth, int windowHeight, LoginController controller) {
         this.controller = controller;
@@ -88,7 +89,7 @@ public class LoginFrame extends JFrame {
         buttonPanel.add(loginButton);
         buttonPanel.add(Box.createVerticalStrut(5));
 
-        JLabel loginLabel = new JLabel("Novo usuário?");
+        loginLabel = new JLabel("Novo usuário?");
         loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -116,10 +117,5 @@ public class LoginFrame extends JFrame {
         JPasswordField passwordField = new JPasswordField();
         passwordField.setMaximumSize(new Dimension(280, 30));
         return passwordField;
-    }
-
-    public void clearFields() {
-        userInputField.setText("");
-        passwordInputField.setText("");
     }
 }

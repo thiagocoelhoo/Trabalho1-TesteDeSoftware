@@ -322,4 +322,12 @@ public class GameControllerTest {
         // Verificar quantidade de moedas do guardião
         assertThat(guardian.getCoins()).isEqualTo(200);
     }
+
+    @Test
+    void testSimulationFinish(){
+        game.createJumpers(2);
+        game.handleCurrentJumper();
+        assertThat(game.isSimulationFinished()).isTrue();
+
+    }
 }

@@ -1,7 +1,6 @@
 package org.example;
 
 import org.example.app.controllers.LoginController;
-import org.example.app.models.dao.DatabaseManager;
 import org.example.app.models.dao.UserDAO;
 import org.example.app.services.UserService;
 import org.example.app.view.LoginFrame;

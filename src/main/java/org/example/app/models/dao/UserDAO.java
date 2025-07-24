@@ -2,6 +2,7 @@ package org.example.app.models.dao;
 
 import org.example.app.models.User;
 
+import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,19 +31,53 @@ public class UserDAO {
             throw new RuntimeException("Erro ao conectar com o banco de dados");
         }
     }
+    public UserDAO(Connection externalConn){
+        this.conn = externalConn;
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id INT PRIMARY KEY AUTO_INCREMENT,
+                    username VARCHAR(255),
+                    password VARCHAR(255),
+                    partidas_totais INT,
+                    partidas_ganhas INT,
+                    avatar VARCHAR(255)
+                )
+            """);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao conectar com o banco de dados");
+        }
+    }
 
     // adicionar novo usuário ao bd
     public void insert(User user) {
         String sql = "INSERT INTO users (username, password, partidas_totais, partidas_ganhas, avatar) VALUES (?, ?, ?, ?, ?)";
         try {
-            PreparedStatement stmt = conn.prepareStatement(sql);
+            // Habilita retorno de chaves geradas (ex: id auto_increment)
+            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getPassword());
             stmt.setInt(3, user.getSimulationCount());
             stmt.setInt(4, user.getSuccesfulSimulations());
             stmt.setString(5, user.getAvatar());
+
             stmt.executeUpdate();
-        } catch (SQLException e) {
+
+            // Recupera a chave gerada (o id)
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int generatedId = generatedKeys.getInt(1);
+                    // Atualiza o id no objeto user
+                    Field idField = User.class.getDeclaredField("id");
+                    idField.setAccessible(true);
+                    idField.set(user, generatedId);
+                }
+            }
+
+        } catch (SQLException | NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
