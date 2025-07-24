@@ -1,16 +1,20 @@
 package org.example.app.view;
 
 import org.example.app.controllers.UserController;
-import org.example.app.models.User;
 
+import org.example.app.models.dao.UserManager;
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
 
 public class NewUserFrame extends JFrame {
+    private UserManager userManager;
 
-    private User newUser;
-    private String selectedImagePath = null;
+    public NewUserFrame(int screenWidth, int screenHeight, UserManager userManager) {
+        this.userManager = userManager;
+    }
 
     public NewUserFrame(int screenWidth, int screenHeight, UserController userController) {
         setTitle("Novo Usuário");
@@ -43,49 +47,49 @@ public class NewUserFrame extends JFrame {
         passwordField.setMaximumSize(new Dimension(200, 30));
         passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // imagem
-        JLabel imageLabel = new JLabel("Avatar:");
-        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JButton selectImageButton = new JButton("Selecionar Imagem");
-        selectImageButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        selectImageButton.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            int option = fileChooser.showOpenDialog(this);
-            if(option == JFileChooser.APPROVE_OPTION){
-                File selectedFile = fileChooser.getSelectedFile();
-                selectedImagePath = selectedFile.getAbsolutePath();
-                JOptionPane.showMessageDialog(this, "Imagem selecionada: " + selectedFile.getName());
-            }
-        });
+        // avatar
+        JLabel avatarLabel = new JLabel("Avatar:");
+        avatarLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        String[] avatarOptions = {"guardian 1", "guardian 2", "creature 1", "creature 2", "cluster"};
+        JComboBox avatarComboBox = new JComboBox(avatarOptions);
+        avatarComboBox.setMaximumSize(new Dimension(200, 30));
+        avatarComboBox.setSelectedItem("guardian 1");
 
         // botão de criar usuário
         JButton createButton = new JButton("Criar");
         createButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         createButton.addActionListener(e -> {
             String name = nameField.getText();
             String password = new String(passwordField.getPassword());
 
-            if (name.isEmpty() || password.isEmpty() || selectedImagePath == null) {
-                JOptionPane.showMessageDialog(this, "Preencha todos os campos e selecione uma imagem.");
+            if (name.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Preencha todos os campos e selecione uma imagem.");
                 return;
             }
 
-            // constrói o User
+            // constrói o usuario
+            int result = userManager.createUser(name, password, avatarComboBox.getSelectedItem().toString());
 
-            if (userController.userExists(name)) {
-                JOptionPane.showMessageDialog(this, "O nome de usuário \""+name+"\" já está em uso");
-                return;
+            if (result > 0 ){
+                JOptionPane.showMessageDialog(this, "Usuário criado com sucesso!");
+                dispose();
+            }
+            else{
+                JOptionPane.showMessageDialog(this,
+                        "Erro de inclusão: o nome de usuário '" + name + "' já existe.");
+                nameField.setText("");
             }
 
-            if (!userController.createUser(name, password, selectedImagePath)) {
-                JOptionPane.showMessageDialog(this, "Houve algum erro durante a criação do usuário. Tente novamente.");
-                return;
-            }
+        });
 
-            // aqui você poderia salvar o user em um banco, arquivo, etc
-            JOptionPane.showMessageDialog(this, "Usuário criado com sucesso!");
-            dispose();
+        createButton.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    createButton.doClick();
+                }
+            }
         });
 
         // adiciona tudo ao painel
@@ -97,8 +101,8 @@ public class NewUserFrame extends JFrame {
         mainPanel.add(passwordLabel);
         mainPanel.add(passwordField);
         mainPanel.add(Box.createVerticalStrut(10));
-        mainPanel.add(imageLabel);
-        mainPanel.add(selectImageButton);
+        mainPanel.add(avatarLabel);
+        mainPanel.add(avatarComboBox);
         mainPanel.add(Box.createVerticalStrut(20));
         mainPanel.add(createButton);
 

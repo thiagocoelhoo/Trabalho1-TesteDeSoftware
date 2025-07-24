@@ -2,22 +2,36 @@ package org.example.app.view;
 
 import org.example.app.controllers.GameController;
 import org.example.app.models.User;
+import org.example.app.models.dao.UserManager;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 
 public class SimulationFrame {
 
     private final int screenWidth;
     private final int screenHeight;
-    private final User currentUser;
+    GameController game;
+    GameView gamePanel;
+    JFrame window;
+    UserManager userManager;
+    String currentUser;
 
-    public SimulationFrame(int screenWidth, int screenHeight, User currentUser) {
+    private Runnable onCloseCallback;
+
+    public SimulationFrame(int screenWidth, int screenHeight, String currUser, UserManager userManager, Runnable onCloseCallback) {
+        this.userManager = userManager;
+        this.currentUser = currUser;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
-        this.currentUser = currentUser;
+        this.onCloseCallback = onCloseCallback;
         showQuantityFrame();
     }
 
@@ -54,16 +68,45 @@ public class SimulationFrame {
         qtWindow.setVisible(true);
     }
 
-    //TODO retornar pontuação
     private void showSimulationFrame(int qtCreatures) {
-        JFrame window = new JFrame("Jumping Creatures");
+        window = new JFrame("Jumping Creatures");
         window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        GameController game = new GameController();
+        window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e){
+                if (onCloseCallback != null) {
+                    onCloseCallback.run();
+                }
+            }
+        });
+
+        game = new GameController();
         game.createJumpers(qtCreatures);
 
-        GameView gamePanel = new GameView(game, currentUser, window);
+        
+        User user = userManager.getUser(currentUser);
+        gamePanel = new GameView(game, user);
         gamePanel.start();
+
+        gamePanel.addComponentListener(new ComponentListener(){
+            public void componentHidden(ComponentEvent e) {
+                if (e.getComponent() == gamePanel) {
+                    JOptionPane.showMessageDialog(window, "Simulação bem sucecida!");
+                    userManager.incrementSuccessfulSimulations(currentUser);
+                    window.dispose();
+                }
+            }
+            public void componentResized(ComponentEvent e) {
+
+            }
+            public void componentMoved(ComponentEvent e) {
+
+            }
+            public void componentShown(ComponentEvent e) {
+
+            }
+        });
         window.add(gamePanel);
 
         window.pack();
@@ -87,18 +130,6 @@ public class SimulationFrame {
         int windowY = (screenHeight / 2) - (h / 2);
         qtWindow.setLocation(windowX, windowY);
         return qtWindow;
-    }
-
-    private JTextField createJTextField(boolean user) {
-        JTextField textField = new JTextField();
-        textField.setMaximumSize(new Dimension(200, 30));
-        textField.setPreferredSize(new Dimension(200, 30));
-        if (!user) {
-            textField = new JPasswordField();
-            textField.setMaximumSize(new Dimension(200, 30));
-            textField.setPreferredSize(new Dimension(200, 30));
-        }
-        return textField;
     }
 
     private JSpinner getSpinner() {

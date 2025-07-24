@@ -2,16 +2,21 @@ package org.example.app.view;
 
 import org.example.app.controllers.UserController;
 import org.example.app.models.User;
+import org.example.app.models.dao.UserManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 
 public class LoginFrame extends JFrame {
 
     private final JTextField userInputField;
     private final JPasswordField passwordInputField;
+
     private UserController userController;
 
     public LoginFrame(int screenWidth, int screenHeight, UserController userController) {
@@ -75,20 +80,30 @@ public class LoginFrame extends JFrame {
         loginButton.setName("Entrar");
         loginButton.setFont(new Font("Arial", Font.PLAIN, 16));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         loginButton.addActionListener(e -> {
             String username = userInputField.getText();
             String password = new String(passwordInputField.getPassword());
-
             User usuario = userController.authenticate(username, password);
 
             if (usuario == null) {
                 userInputField.setText("");
                 passwordInputField.setText("");
+                JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos!");
             }
             else {
                 dispose();
                 MainFrame main = new MainFrame(screenWidth, screenHeight, usuario, userController);
                 main.setVisible(true);
+            }
+        });
+
+        loginButton.addKeyListener(new KeyAdapter(){
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    System.out.println("Enter");
+                    loginButton.doClick();
+                }
             }
         });
 

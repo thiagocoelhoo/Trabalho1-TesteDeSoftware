@@ -1,18 +1,30 @@
 package org.example.app.models;
 
 public class User {
+    private int id;
     private String username;
     private String password;
-    private int partidas_totais;
-    private int partidas_ganhas;
-    private String avatar;
 
-    public User(String username, String password, String a) {
+    private String avatar;
+    private int simulationCount;
+    private int succesfulSimulations;
+
+    public User(int id, String username, String password, String avatar) {
+        this.id = id;
         this.username = username;
         this.password = password;
-        this.partidas_ganhas = 0;
-        this.partidas_totais = 0;
-        this.avatar = a;
+        
+        this.avatar = avatar;
+        this.simulationCount = 0;
+        this.succesfulSimulations = 0;
+    }
+
+    public User(int id, String username, String password, String av, int qtSim, int sucedidas) {
+        this.username = username;
+        this.password = password;
+        this.avatar = av;
+        this.simulationCount = qtSim;
+        this.succesfulSimulations = sucedidas;
     }
 
     public String getUsername() {
@@ -39,19 +51,26 @@ public class User {
         this.avatar = avatar;
     }
 
-    public int getPartidas_totais() {
-        return partidas_totais;
+    public int getSimulationCount() {
+        return simulationCount;
     }
 
-    public void setPartidas_totais(int partidas_totais) {
-        this.partidas_totais = partidas_totais;
+    public void setSimulationCount(int simulationCount) {
+        this.simulationCount = simulationCount;
     }
 
-    public int getPartidas_ganhas() {
-        return partidas_ganhas;
+    public int getSuccesfulSimulations() {
+        return succesfulSimulations;
+    }
+    public void setSuccessfulSimulations(int succesfulSimulations) {
+        this.succesfulSimulations = succesfulSimulations;
     }
 
-    public void setPartidas_ganhas(int partidas_ganhas) {
-        this.partidas_ganhas = partidas_ganhas;
+    public int getId() {
+        return id;
+    }
+    public String toString() {
+        return "Usuario{" + "id=" + id + ", login='" + username + '\'' + ", pontuacao=" + succesfulSimulations +
+                ", simulacoesExecutadas=" + simulationCount + '}';
     }
 }

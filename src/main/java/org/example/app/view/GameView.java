@@ -17,7 +17,7 @@ import java.util.List;
 
 
 /**
-* Classe destinada à parte gráfica da aplicação
+* Classe destinada à parte gráfica da simulação
 */
 public class GameView extends JPanel implements ActionListener {
     private int frameInterval = 1; // Interval in milliseconds
@@ -25,14 +25,9 @@ public class GameView extends JPanel implements ActionListener {
     private Timer timer;
     private long lastTick = 0;
 
-    private final int MAX_ITERATIONS = 2_000;
-    private static int iteration = 0;
-
     private final GameController game;
-    private User currentUser;
+
     private UserDAO userDAO = new UserDAO();
-    private JFrame frame;
-    private boolean gameOver = false;
 
     private BufferedImage backgroundImage;
     private BufferedImage aegislashSprite;
@@ -41,10 +36,6 @@ public class GameView extends JPanel implements ActionListener {
     private BufferedImage spoinkRedSprite;
 
     public GameView(GameController game, User user, JFrame frame) {
-        this.frame = frame;
-        this.currentUser = user;
-        user.setPartidas_totais(user.getPartidas_totais() + 1);
-
         userDAO.update(user);
 
         // Setup panel
@@ -53,11 +44,11 @@ public class GameView extends JPanel implements ActionListener {
 
         // Load resources
         try {
-            backgroundImage = ImageIO.read(new File("background.png"));
-            aegislashSprite = ImageIO.read(new File("aegislash.png"));
-            grumpigSprite = ImageIO.read(new File("grumpig.png"));
-            spoinkSprite = ImageIO.read(new File("spoink.png"));
-            spoinkRedSprite = ImageIO.read(new File("spoink_red.png"));
+            backgroundImage = ImageIO.read(new File("src/main/java/org/example/app/resources/background.png"));
+            aegislashSprite = ImageIO.read(new File("src/main/java/org/example/app/resources/aegislash.png"));
+            grumpigSprite = ImageIO.read(new File("src/main/java/org/example/app/resources/grumpig.png"));
+            spoinkSprite = ImageIO.read(new File("src/main/java/org/example/app/resources/spoink.png"));
+            spoinkRedSprite = ImageIO.read(new File("src/main/java/org/example/app/resources/spoink_red.png"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -81,20 +72,13 @@ public class GameView extends JPanel implements ActionListener {
         double deltaTime = (currentTick - lastTick) / 1e9;
 
         game.update(deltaTime * simulationSpeed);
-
-        iteration++;
-        repaint();
-
-        if (!gameOver && checkWin()) {
-            currentUser.setPartidas_ganhas(currentUser.getPartidas_ganhas() + 1);
-            userDAO.update(currentUser);
-            JOptionPane.showMessageDialog(this, "Parabéns, você ganhou!!");
-            frame.dispose();
-            gameOver = true;
-            return;
+        if (game.isSimulationFinished()){
+            this.setVisible(false);
         }
-
-        lastTick = currentTick;
+        else{
+            repaint();
+            lastTick = currentTick;
+        }
     }
 
     public boolean checkWin() {

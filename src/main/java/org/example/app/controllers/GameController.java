@@ -4,6 +4,7 @@ import org.example.app.models.Jumper;
 import org.example.app.models.JumperType;
 import org.example.utils.CircularLinkedList;
 
+import javax.swing.*;
 import java.util.Iterator;
 
 /**
@@ -17,9 +18,20 @@ public class GameController {
     private Iterator<Jumper> jumperIterator;
     private Jumper currentJumper = null;
 
+    private boolean finishSimulation = false;
+
     public GameController() {
+
     }
-    
+
+    public boolean isSimulationFinished() {
+        return finishSimulation;
+    }
+
+    public void finishSimulation() {
+        finishSimulation = true;
+    }
+
     public CircularLinkedList<Jumper> getJumpers() {
         return jumpers;
     }
@@ -75,6 +87,7 @@ public class GameController {
         return nearestJumper;
     }
 
+    // condição de parada aqui?
     public void handleCurrentJumper() {
         if (currentJumper == null) {
             selectNextJumper();
@@ -84,6 +97,14 @@ public class GameController {
         if (!currentJumper.isMoving()) {
             handleStealAndRemoval();
             currentJumper = null;
+        }
+
+        // condição de parada aqui?
+        if (jumpers.size() < 3){
+            if (jumpers.get(0).type != JumperType.CLUSTER){
+                finishSimulation();
+            }
+
         }
     }
 
