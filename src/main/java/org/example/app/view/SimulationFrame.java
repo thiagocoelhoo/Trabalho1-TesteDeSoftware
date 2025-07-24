@@ -6,13 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class SimulationFrame extends JFrame {
-    private final int screenWidth;
-    private final int screenHeight;
     private final SimulationController controller;
 
-    public SimulationFrame(int screenWidth, int screenHeight, SimulationController controller) {
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
+    public SimulationFrame(SimulationController controller) {
         this.controller = controller;
         showQuantityFrame();
     }

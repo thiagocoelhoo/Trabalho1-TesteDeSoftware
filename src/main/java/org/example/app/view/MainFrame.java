@@ -165,7 +165,7 @@ public class MainFrame extends JFrame {
         simulateButton.addActionListener(e -> {
             controller.startSimulation();
             SimulationController simController = new SimulationController(controller.getUserService(), controller.getCurrentUser().getUsername(), this::refreshPage);
-            SimulationFrame simFrame = new SimulationFrame(screenWidth, screenHeight, simController);
+            SimulationFrame simFrame = new SimulationFrame(simController);
             simFrame.setVisible(true);
         });
 

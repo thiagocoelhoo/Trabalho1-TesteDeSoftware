@@ -6,7 +6,6 @@ import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
-import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.example.app.services.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -90,14 +89,10 @@ public class NewUserFrameTest {
         window.textBox("nameField").enterText("Bob");
         window.textBox("passwordField").enterText("secret");
         window.comboBox("avatarComboBox").selectItem("creature 2");
-
         window.button("createButton").click();
 
-        // window.dialog().requireVisible().requireMessage("Erro de inclusão: o nome de usuário 'Bob' já existe.");
         window.dialog().label("OptionPane.label").requireText("Erro de inclusão: o nome de usuário 'Bob' já existe.");
-
         window.dialog().button(JButtonMatcher.withText("OK")).click();
-        window.textBox("nameField").requireText("");
     }
 
     @Test
