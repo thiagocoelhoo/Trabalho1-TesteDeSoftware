@@ -1,28 +1,34 @@
 package org.example.app.view;
 
-import org.example.app.controllers.UserController;
 import org.example.app.models.User;
-import org.example.app.models.dao.UserManager;
+import org.example.app.services.UserService;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
-import java.util.List;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.List;
 
 public class MainFrame extends JFrame {
-    private UserManager userManager;
+    private UserService userService;
     private User currentUser;
     private DefaultTableModel tableModel;
     private JTable tab;
     private JLabel totalSimLabel;
     private JLabel mediaSimLabel;
     private JLabel userScoreLabel;
+    private int screenWidth;
+    private int screenHeight;
 
-    public MainFrame(int screenWidth, int screenHeight, User currUser, UserManager userManager) {
-        this.userManager = userManager;
+    public MainFrame(int screenWidth, int screenHeight, User currUser, UserService userService) {
+        this.userService = userService;
         this.currentUser = currUser;
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
+        init();
+    }
+
+    public void init() {
         // configura janela
         setTitle("Jumping Creatures!");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -48,8 +54,8 @@ public class MainFrame extends JFrame {
         // textos da simulação
         JPanel simTextPanel = new JPanel();
         simTextPanel.setLayout(new BoxLayout(simTextPanel, BoxLayout.Y_AXIS));
-        totalSimLabel = new JLabel("Total de simulações: " + userManager.getTotalSimulations());
-        mediaSimLabel = new JLabel("Média de simulações: " + userManager.getAverageSuccessfulSimulations());
+        totalSimLabel = new JLabel("Total de simulações: " + userService.getTotalSimulations());
+        mediaSimLabel = new JLabel("Média de simulações ganhas: " + userService.getAverageWins());
         simTextPanel.add(totalSimLabel);
         simTextPanel.add(mediaSimLabel);
 
@@ -62,7 +68,7 @@ public class MainFrame extends JFrame {
         JButton addUserButton = new JButton("Adicionar Usuário");
         addUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         addUserButton.addActionListener(e -> {
-            NewUserFrame newUserFrame = new NewUserFrame(screenWidth, screenHeight, userManager);
+            NewUserFrame newUserFrame = new NewUserFrame(screenWidth, screenHeight, userService);
             newUserFrame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent e) {
@@ -82,11 +88,12 @@ public class MainFrame extends JFrame {
 
         removeUserButton.addActionListener(e -> {
             String selectedUser = tab.getModel().getValueAt(tab.getSelectedRow(), 0).toString();
+
             if (selectedUser.equals(currentUser.getUsername())){
                 JOptionPane.showMessageDialog(this, "Usuário não pode se remover!");
                 return;
             }
-            userManager.removeUser(selectedUser);
+            userService.removeUser(selectedUser);
             refreshPage();
         });
 
@@ -170,15 +177,15 @@ public class MainFrame extends JFrame {
         JButton simulateButton = new JButton("Nova Simulação");
         simulateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         simulateButton.addActionListener(e -> {
-            userManager.incrementSimCount(currentUser.getUsername());
-            SimulationFrame sim = new SimulationFrame(screenWidth, screenHeight, currUser.getUsername(), userManager, this::refreshPage);
+            userService.incrementTotalGames(currentUser.getUsername());
+            SimulationFrame sim = new SimulationFrame(screenWidth, screenHeight, currentUser.getUsername(), userService, this::refreshPage);
         });
 
         // botão de log off
         JButton exitButton = new JButton("Sair");
         exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         exitButton.addActionListener(e -> {
-            LoginFrame loginFrame = new LoginFrame(screenWidth, screenHeight, userController);
+            LoginFrame loginFrame = new LoginFrame(screenWidth, screenHeight, userService);
             loginFrame.setVisible(true);
             dispose();
         });
@@ -204,11 +211,11 @@ public class MainFrame extends JFrame {
 
     private JTable getJTable() {
         String [] columnNames = {"Usuário", "Quantidade de Simulações", "Simulações Bem-Sucedidas"};
-        ArrayList<User> databaseUsers = userManager.getAllUsers();
+        List<User> users = userService.getAllUsers();
 
-        Object[][] userData = new Object[databaseUsers.size()][columnNames.length];
-        for (int i = 0; i < databaseUsers.size(); i++) {
-            User u = databaseUsers.get(i);
+        Object[][] userData = new Object[users.size()][columnNames.length];
+        for (int i = 0; i < users.size(); i++) {
+            User u = users.get(i);
             userData[i][0] = u.getUsername();
             userData[i][1] = u.getSimulationCount();
             userData[i][2] = u.getSuccesfulSimulations();
@@ -236,7 +243,7 @@ public class MainFrame extends JFrame {
         tableModel.setRowCount(0);
 
         // Pega os dados atualizados do banco
-        ArrayList<User> databaseUsers = userManager.getAllUsers();
+        List<User> databaseUsers = userService.getAllUsers();
 
         // Adiciona os dados no modelo
         for (User u : databaseUsers) {
@@ -249,10 +256,10 @@ public class MainFrame extends JFrame {
         }
 
         // ** labels de pontuação global **
-        totalSimLabel.setText("Total de simulações: " + userManager.getTotalSimulations());
-        mediaSimLabel.setText("Média de simulações: " + userManager.getAverageSuccessfulSimulations());
+        totalSimLabel.setText("Total de simulações: " + userService.getTotalSimulations());
+        mediaSimLabel.setText("Média de simulações: " + userService.getAverageWins());
 
         // *** label de pontuação de usuário ***
-        userScoreLabel.setText("Pontuação " + userManager.getUserSuccessfulSimulations(currentUser.getUsername()));
+        userScoreLabel.setText("Pontuação " + userService.getUser(currentUser.getUsername()).getSuccesfulSimulations());
     }
 }

@@ -1,7 +1,7 @@
 package org.example.app.models;
 
 public class User {
-    private int id;
+    private Integer id;
     private String username;
     private String password;
 
@@ -9,7 +9,7 @@ public class User {
     private int simulationCount;
     private int succesfulSimulations;
 
-    public User(int id, String username, String password, String avatar) {
+    public User(Integer id, String username, String password, String avatar) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -62,6 +62,7 @@ public class User {
     public int getSuccesfulSimulations() {
         return succesfulSimulations;
     }
+
     public void setSuccessfulSimulations(int succesfulSimulations) {
         this.succesfulSimulations = succesfulSimulations;
     }
@@ -69,6 +70,7 @@ public class User {
     public int getId() {
         return id;
     }
+
     public String toString() {
         return "Usuario{" + "id=" + id + ", login='" + username + '\'' + ", pontuacao=" + succesfulSimulations +
                 ", simulacoesExecutadas=" + simulationCount + '}';

@@ -1,9 +1,8 @@
 package org.example;
 
-import org.example.app.controllers.UserController;
-import org.example.app.models.UserDAO;
-import org.example.app.models.dao.DbManager;
-import org.example.app.models.dao.UserManager;
+import org.example.app.models.dao.DatabaseManager;
+import org.example.app.models.dao.UserDAO;
+import org.example.app.services.UserService;
 import org.example.app.view.LoginFrame;
 import java.awt.*;
 
@@ -18,10 +17,13 @@ public class Main {
         final int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
         final int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 
-        DbManager db = new DbManager();
-        db.databaseStart();
-        UserManager userManager = new UserManager();
-        LoginFrame login = new LoginFrame(screenWidth, screenHeight, userManager);
+        // DatabaseManager db = new DatabaseManager();
+        // db.init();
+
+        UserDAO userDAO = new UserDAO();
+        UserService userService = new UserService(userDAO);
+
+        LoginFrame login = new LoginFrame(600, 400, userService);
         login.setVisible(true);
     }
 }

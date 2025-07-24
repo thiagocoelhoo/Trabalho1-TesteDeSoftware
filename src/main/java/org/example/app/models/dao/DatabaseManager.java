@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DbManager {
+public class DatabaseManager {
     private static final String DB_URL = "jdbc:h2:./data/users";
     private static final String USER = "sa";
     private static final String PASS = "sa";
@@ -16,7 +16,7 @@ public class DbManager {
     }
 
     // Método de inicialização do banco
-    public static void initializeDatabase() {
+    public static void init() {
         String sql = """
             CREATE TABLE IF NOT EXISTS users (
                 id INT PRIMARY KEY AUTO_INCREMENT,
@@ -30,9 +30,9 @@ public class DbManager {
 
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            System.out.println("✔ Banco de dados iniciado.");
+            System.out.println("Banco de dados iniciado.");
         } catch (SQLException e) {
-            System.err.println("✖ Erro ao criar o banco de dados: " + e.getMessage());
+            System.err.println("Erro ao criar o banco de dados: " + e.getMessage());
             e.printStackTrace();
         }
     }

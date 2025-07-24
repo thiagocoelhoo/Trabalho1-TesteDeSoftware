@@ -2,7 +2,8 @@ package org.example.app.view;
 
 import org.example.app.controllers.GameController;
 import org.example.app.models.User;
-import org.example.app.models.dao.UserManager;
+import org.example.app.models.dao.UserDAO;
+import org.example.app.services.UserService;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
@@ -15,19 +16,18 @@ import java.awt.event.WindowEvent;
 
 
 public class SimulationFrame {
-
     private final int screenWidth;
     private final int screenHeight;
     GameController game;
     GameView gamePanel;
     JFrame window;
-    UserManager userManager;
+    UserService userService;
     String currentUser;
 
     private Runnable onCloseCallback;
 
-    public SimulationFrame(int screenWidth, int screenHeight, String currUser, UserManager userManager, Runnable onCloseCallback) {
-        this.userManager = userManager;
+    public SimulationFrame(int screenWidth, int screenHeight, String currUser, UserService userService, Runnable onCloseCallback) {
+        this.userService = userService;
         this.currentUser = currUser;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
@@ -85,15 +85,15 @@ public class SimulationFrame {
         game.createJumpers(qtCreatures);
 
         
-        User user = userManager.getUser(currentUser);
-        gamePanel = new GameView(game, user);
+        User user = userService.getUser(currentUser);
+        gamePanel = new GameView(game, user, userService);
         gamePanel.start();
 
         gamePanel.addComponentListener(new ComponentListener(){
             public void componentHidden(ComponentEvent e) {
                 if (e.getComponent() == gamePanel) {
                     JOptionPane.showMessageDialog(window, "Simulação bem sucecida!");
-                    userManager.incrementSuccessfulSimulations(currentUser);
+                    userService.incrementWins(currentUser);
                     window.dispose();
                 }
             }

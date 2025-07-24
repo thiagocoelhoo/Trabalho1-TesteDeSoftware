@@ -4,7 +4,7 @@ import org.example.app.controllers.GameController;
 import org.example.app.models.Jumper;
 import org.example.app.models.JumperType;
 import org.example.app.models.User;
-import org.example.app.models.UserDAO;
+import org.example.app.services.UserService;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,7 +27,7 @@ public class GameView extends JPanel implements ActionListener {
 
     private final GameController game;
 
-    private UserDAO userDAO = new UserDAO();
+    private UserService userService;
 
     private BufferedImage backgroundImage;
     private BufferedImage aegislashSprite;
@@ -35,9 +35,14 @@ public class GameView extends JPanel implements ActionListener {
     private BufferedImage spoinkSprite;
     private BufferedImage spoinkRedSprite;
 
-    public GameView(GameController game, User user, JFrame frame) {
-        userDAO.update(user);
+    public GameView(GameController game, User user, UserService userService) {
+        this.userService = userService;
+        this.userService.updateUser(user);
+        this.game = game;
+        this.init();
+    }
 
+    public void init() {
         // Setup panel
         setPreferredSize(new Dimension(800, 450));
         setBackground(Color.BLACK);
@@ -52,9 +57,6 @@ public class GameView extends JPanel implements ActionListener {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
-        // Create game
-        this.game = game;
 
         // Create timer
         timer = new Timer(frameInterval, this);

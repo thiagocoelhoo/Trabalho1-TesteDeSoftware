@@ -1,8 +1,7 @@
 package org.example.app.view;
 
-import org.example.app.controllers.UserController;
 import org.example.app.models.User;
-import org.example.app.models.dao.UserManager;
+import org.example.app.services.UserService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,21 +12,28 @@ import java.awt.event.MouseEvent;
 
 
 public class LoginFrame extends JFrame {
+    private JTextField userInputField;
+    private JPasswordField passwordInputField;
 
-    private final JTextField userInputField;
-    private final JPasswordField passwordInputField;
+    private UserService userService;
+    private int windowWidth;
+    private int windowHeight;
 
-    private UserController userController;
+    public LoginFrame(int windowWidth, int windowHeight, UserService userService) {
+        this.userService = userService;
+        this.windowWidth = windowWidth;
+        this.windowHeight = windowHeight;
+        init();
+    }
 
-    public LoginFrame(int screenWidth, int screenHeight, UserController userController) {
-        this.userController = userController;
-
+    public void init() {
         // configura a janela
         setTitle("Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 400);
+        setSize(this.windowWidth, this.windowHeight);
         setLocationRelativeTo(null);  // centraliza
-        setResizable(false);
+        setResizable(true);
+
 
         // painel principal
         JPanel mainPanel = new JPanel();
@@ -84,17 +90,18 @@ public class LoginFrame extends JFrame {
         loginButton.addActionListener(e -> {
             String username = userInputField.getText();
             String password = new String(passwordInputField.getPassword());
-            User usuario = userController.authenticate(username, password);
+            boolean auth = userService.authenticate(username, password);
 
-            if (usuario == null) {
+            if (auth) {
+                dispose();
+                User usuario = userService.getUser(username);
+                MainFrame main = new MainFrame(windowWidth, windowHeight, usuario, userService);
+                main.setVisible(true);
+            }
+            else {
                 userInputField.setText("");
                 passwordInputField.setText("");
                 JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos!");
-            }
-            else {
-                dispose();
-                MainFrame main = new MainFrame(screenWidth, screenHeight, usuario, userController);
-                main.setVisible(true);
             }
         });
 
@@ -115,7 +122,7 @@ public class LoginFrame extends JFrame {
 
         loginLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                new NewUserFrame(screenWidth, screenHeight, userController);
+                new NewUserFrame(windowWidth, windowHeight, userService);
             }
 
             public void mouseEntered(MouseEvent e) {

@@ -6,8 +6,8 @@ import org.assertj.swing.core.Robot;
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
-import org.example.app.controllers.UserController;
 import org.example.app.models.User;
+import org.example.app.services.UserService;
 import org.junit.jupiter.api.*;
 
 import javax.swing.*;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 public class LoginFrameTest {
     private FrameFixture window;
     private Robot robot;
-    private UserController userController;
+    private UserService userService;
 
     @BeforeAll
     public static void setUpOnce() {
@@ -26,14 +26,14 @@ public class LoginFrameTest {
 
     @BeforeEach
     public void setUp() {
-        // Mock controller
-        userController = mock(UserController.class);
+        // Mock service
+        userService = mock(UserService.class);
 
         robot = BasicRobot.robotWithNewAwtHierarchy();
         robot.settings().delayBetweenEvents(10);
 
         LoginFrame frame = GuiActionRunner.execute(() ->
-                new LoginFrame(800, 600, userController)  // injetar o mock corretamente aqui
+            new LoginFrame(800, 600, userService)  // injetar o mock corretamente aqui
         );
 
         frame.setVisible(true);
@@ -65,7 +65,7 @@ public class LoginFrameTest {
     @GUITest
     public void shouldClearFieldsWhenLoginFails() {
         // Mock comportamento: login inválido
-        when(userController.authenticate("user", "wrong")).thenReturn(null);
+        when(userService.authenticate("user", "wrong")).thenReturn(null);
 
         var usernameField = window.textBox("usernameField");
         var passwordField = window.textBox("passwordField");
@@ -84,7 +84,7 @@ public class LoginFrameTest {
     @GUITest
     public void shouldOpenMainFrameOnSuccessfulLogin() {
         User mockUser = new User("user", "any", "");
-        when(userController.authenticate("user", "correct")).thenReturn(mockUser);
+        when(userService.authenticate("user", "correct")).thenReturn(mockUser);
 
         var usernameField = window.textBox("usernameField");
         var passwordField = window.textBox("passwordField");

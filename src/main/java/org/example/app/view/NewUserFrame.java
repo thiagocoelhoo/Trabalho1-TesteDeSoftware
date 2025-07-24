@@ -1,8 +1,7 @@
 package org.example.app.view;
 
-import org.example.app.controllers.UserController;
+import org.example.app.services.UserService;
 
-import org.example.app.models.dao.UserManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -10,13 +9,14 @@ import java.awt.event.KeyEvent;
 
 
 public class NewUserFrame extends JFrame {
-    private UserManager userManager;
+    private UserService userService;
 
-    public NewUserFrame(int screenWidth, int screenHeight, UserManager userManager) {
-        this.userManager = userManager;
+    public NewUserFrame(int screenWidth, int screenHeight, UserService userService) {
+        this.userService = userService;
+        this.init();
     }
 
-    public NewUserFrame(int screenWidth, int screenHeight, UserController userController) {
+    public void init() {
         setTitle("Novo Usuário");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 400);
@@ -25,7 +25,7 @@ public class NewUserFrame extends JFrame {
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         JLabel newUserLabel = new JLabel("Adicionar Usuário");
         newUserLabel.setFont(new Font("Arial", Font.BOLD, 25));
@@ -69,14 +69,12 @@ public class NewUserFrame extends JFrame {
                 return;
             }
 
-            // constrói o usuario
-            int result = userManager.createUser(name, password, avatarComboBox.getSelectedItem().toString());
+            boolean created = userService.createUser(name, password, avatarComboBox.getSelectedItem().toString());
 
-            if (result > 0 ){
+            if (created) {
                 JOptionPane.showMessageDialog(this, "Usuário criado com sucesso!");
                 dispose();
-            }
-            else{
+            } else {
                 JOptionPane.showMessageDialog(this,
                         "Erro de inclusão: o nome de usuário '" + name + "' já existe.");
                 nameField.setText("");
